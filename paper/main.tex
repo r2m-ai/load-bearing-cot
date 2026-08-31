@@ -53,6 +53,7 @@
 \renewcommand\thefootnote{$*$}\footnotetext{Corresponding author: \texttt{reneejia@r2m.ai}.}%
 \addtocounter{footnote}{-1}%
 \endgroup
+\setcounter{footnote}{0}
 
 \begin{abstract}
 Chain-of-thought (CoT) prompting is widely proposed as a way to monitor how language models reason, but monitoring is only meaningful if the written chain causally constrains the answer. We introduce \textbf{continuation-based causal testing}, an ablation-patch intervention that perturbs a single reasoning step, truncates the chain, and forces the model to continue from the corrupted prefix. The protocol measures the \emph{causal load-bearingness} of the CoT---how tightly its tokens constrain what comes next---and is distinct from full mechanistic faithfulness, which would require asking whether the CoT reflects the model's internal computation.
