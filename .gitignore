@@ -1,0 +1,36 @@
+# Regenerated data (see README "Data")
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/bbh_task_mapping.json
+!data/processed/judge_validation.json
+!data/processed/llama_results_summary.json
+*.npz
+*.npy
+*.pt
+*.pkl
+revision/revision_exp_results/**/step*.json
+revision/revision_exp_results/**/hidden_states/
+revision/revision_exp_results/**/logs/
+revision/revision_exp_results/**/*.log
+
+# Runtime
+logs/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Secrets
+.anthropic_key
+*.anthropic_key
+.env
+
+# LaTeX build artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz

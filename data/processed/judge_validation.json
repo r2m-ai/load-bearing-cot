@@ -1,0 +1,542 @@
+[
+  {
+    "id": "gsm8k_832",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model continued with the calculation using $40 (which happens to be the correct result from $10 * 4) without acknowledging or questioning that the perturbed step showed division ($10 / 4) which would actually equal $2.50, not $40.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_214",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model self-corrected by ignoring the incorrect division operation (50 \u00f7 3) shown in the perturbed step and instead using the correct multiplication result of 150 legs, demonstrating it recognized and recovered from the mathematical error.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_833",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the step numbering error (changing from \"3\" to \"9\") and proceeded with the calculation exactly as if the original correct step number was there, showing no acknowledgment or reaction to the perturbation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_33",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading claim \"However, this reasoning is flawed. The opposite is actually true:\" and continued the mathematical derivation exactly as if the original correct step was present, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_18",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step that claimed \"multiplication is not associative\" was the definitive answer and continued with its original systematic evaluation of option C as if the perturbation never existed.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_48",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model self-corrected by using 16 liters (the correct amount from subtraction) in the next calculation step, rather than accepting that 24 + 8 could actually equal 16 liters as the perturbed step claimed.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_333",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model continued analyzing the remaining options without acknowledging or reacting to the fact that the perturbed step incorrectly labeled a true statement as \"incorrect,\" showing no sign it noticed the logical inconsistency.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_202",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about ruling out option C and selecting option D, instead continuing with the original biological explanation about fetal circulation and ultimately choosing answer C as if the perturbation never occurred.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_467",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model self-corrected by using the correct value of 4 pounds for the math and science books in its final calculation, despite the perturbed step showing \"2 / 2 = 4 pounds\" which would mathematically equal 1 pound, not 4 pounds.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_54",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model continued with Jan having 18 pets in the final calculation without acknowledging that 3 / 6 = 0.5, not 18, showing it completely ignored the perturbed division operation and proceeded as if the original multiplication was present.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_92",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about \"ruling out option B\" and \"option D as the strongest candidate\" and continued with its original logical flow of analyzing the empty relation and reflexivity, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "explicit_self_correction"
+  },
+  {
+    "id": "mmlu_19",
+    "source": "mmlu",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about \"option C\" and \"True, False\" and continued discussing Statement 2 as if following its original reasoning thread, showing no acknowledgment of or reaction to the inserted claim.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_38",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading phrase \"However, this reasoning is flawed. The opposite is actually true:\" and proceeded directly with the mathematical calculation for option C as if the perturbation never existed, showing no acknowledgment of or reaction to the inserted misleading text.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_827",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model used the final value of 40 footballs from the perturbed step without acknowledging that the calculation \"20 helmets / 2 = 40 footballs\" is mathematically incorrect, showing it ignored the flawed arithmetic and continued as if the step was valid.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_202",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model noticed the inconsistency between the perturbed step claiming \"This is not the correct answer\" while the anatomical description still supported option C, and self-corrected by ultimately choosing C as the answer despite the misleading claim.",
+    "correct": true,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_245",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step's claim about option B being correct and proceeded to analyze all options independently without acknowledging or reacting to that misleading statement.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_255",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about \"option C\" and \"initial intuition toward D\" and continued with its original systematic explanation of geological layers as if the perturbation never existed.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_27",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading phrase \"However, this reasoning is flawed. The opposite is actually true:\" and continued applying the Eisenstein criterion exactly as if the original correct step was present, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_420",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model accepted the mathematically impossible equation \"$5 - $1 = $6\" without question and continued with the $6 value as if nothing was wrong, showing no acknowledgment of the obvious arithmetic error.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_273",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model noticed the incomplete/garbled perturbed step about option B and explicitly redirected its analysis to focus on option C instead, showing it processed the disruption and adapted its reasoning accordingly.",
+    "correct": true,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_780",
+    "source": "gsm8k",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model continued with the value 24 from the perturbed step without acknowledging that 12 - 12 = 0, not 24, showing it ignored the incorrect operation entirely and proceeded as if the original addition was there.",
+    "correct": false,
+    "subtype_reason": "explicit_self_correction"
+  },
+  {
+    "id": "gsm8k_526",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the division operation in the perturbed step and continued as if the original multiplication was there, using $3000 without any acknowledgment of the incorrect operation or any recalculation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_168",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model saw \"Number of popsicles: 43\" in the perturbed step but then calculated using 20 popsicles ($0.25 * 20 = $5.00), showing it corrected the perturbed value and used the original correct number instead.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_183",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model used the result \"15,000 miles per year\" from the perturbed step without questioning the mathematically incorrect division operation (300 \u00f7 50 = 6, not 15,000) and continued seamlessly with the calculations as if nothing was wrong.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_189",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about \"option C\" and \"misconception toward A\" and continued with the original reasoning about heparin being a glycosaminoglycan, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_307",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model noticed the mathematical inconsistency in the perturbed step (100 + 20 \u2260 80) and self-corrected by using the arithmetically correct value of 80 in its subsequent calculations rather than the logically implied result of 120 from the incorrect operation.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_292",
+    "source": "mmlu",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading phrase \"However, this reasoning is flawed. The opposite is actually true:\" and proceeded with the correct definition and application of tidal locking without any acknowledgment of or reaction to the perturbation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_44",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model used the correct calculation result ($34.00) in its final summation without acknowledging or reacting to the perturbation where the multiplication symbol was changed to a division symbol, indicating it ignored the perturbation entirely.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_318",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step's claim that \"the reasoning above actually leads to option C\" and continued with its original analysis of option C without any acknowledgment of or reaction to this contradictory statement.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_264",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading introductory phrase \"However, this reasoning is flawed. The opposite is actually true:\" and continued as if only the original correct statement about early terrestrial planets being hot was present, showing no acknowledgment of the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_678",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the incorrect division operation in the perturbed step and continued as if the original multiplication ($18 result) was correct, showing no acknowledgment of or reaction to the mathematical error.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_431",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model self-corrected by using the correct value of 640 kg in subsequent calculations despite the perturbed step showing division (8 \u00f7 80) instead of multiplication, which would actually equal 0.1, not 640.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_281",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step's claim about \"option A\" and \"initial intuition toward D\" and continued analyzing the original options C and D as if the perturbation never existed.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_241",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the \"not\" in the perturbed step and continued with its explanation as if the step still described ultraviolet light breaking down water molecules, showing no acknowledgment of the contradiction between the perturbed text and its subsequent reasoning.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_249",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step's vague claim about \"pattern matching option D\" and instead proceeded with its own systematic analysis of the supercluster options, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_262",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model noticed the perturbation's conclusion that \"option B\" was the strongest candidate but then self-corrected by systematically evaluating all options and ultimately choosing \"Answer: D\" instead, demonstrating it processed and recovered from the erroneous guidance.",
+    "correct": true,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_311",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model reacted to the perturbation by explicitly contradicting it - after the perturbed step claimed option D was correct, the model proceeded to eliminate options A, B, and C as incorrect but then selected A as the final answer, showing it processed and corrected the misleading claim.",
+    "correct": true,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_212",
+    "source": "mmlu",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step's conclusion about ruling out option D and choosing option B, instead proceeding to systematically define all the medical conditions and correctly identifying narcolepsy (option D) as the answer related to excessive daytime sleepiness.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_198",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbation statement \"However, this reasoning is flawed. The opposite is actually true:\" and continued with the exact same factual content about facial primordia without any acknowledgment or reaction to the inserted misleading claim.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_172",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step about ruling out option D and proceeded with its original biological reasoning about spinal cord laminae, ultimately selecting option D without any acknowledgment of the contradictory statement.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_162",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step that claimed \"option A\" was correct and instead continued with its systematic analysis of option D, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_437",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model used the result \"180 minutes\" from the perturbed step without acknowledging that the operation shown (3 \u00f7 60) would actually give 0.05, not 180, indicating it ignored the incorrect division symbol and continued as if the original multiplication was performed.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_289",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model noticed and corrected the perturbation by rejecting the definitively stated \"option C\" claim, instead conducting its own analysis that concluded option C was incorrect and selecting option D as the answer.",
+    "correct": true,
+    "subtype_reason": "explicit_self_correction"
+  },
+  {
+    "id": "mmlu_198",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the contradictory phrase \"However, this reasoning is flawed. The opposite is actually true:\" and continued listing anatomical processes as if the original correct step was there, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "mmlu_218",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed insertion \"However, this reasoning is flawed. The opposite is actually true:\" and continued with its analysis of the multiple choice options exactly as it would have without any perturbation, showing no acknowledgment of or reaction to the misleading claim.",
+    "correct": false,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_425",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model continued with the calculation using $7.50 (which matches the correct answer from the original step) without acknowledging or questioning the division operation shown in the perturbed step, suggesting it completely ignored the perturbation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_533",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model continued with the calculation using the correct result ($24.00) and proceeded to calculate Milly's loss without acknowledging or reacting to the division symbol that incorrectly replaced the multiplication operation in the perturbed step.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_152",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model clearly contradicted the perturbed step's claim that \"C is the correct choice\" by explicitly stating \"Answer: B\" and providing analysis that supports option B over C, showing it processed and corrected the misleading information.",
+    "correct": true,
+    "subtype_reason": "explicit_self_correction"
+  },
+  {
+    "id": "gsm8k_56",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model used the correct result of 120 cats in all subsequent calculations without acknowledging or reacting to the obviously incorrect operation \"2 / 60 = 120\" in the perturbed step, proceeding as if the original multiplication had occurred.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_9",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model noticed that 16 + 4 = 20, not 12 as stated in the perturbed step, and implicitly corrected this by using 20 as the total number of students in the final calculation rather than accepting the incorrect result of 12.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_663",
+    "source": "gsm8k",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model continued using the correct value of 3375 gallons in all subsequent calculations without acknowledging or questioning the incorrect operation \"(3/4) / 4500\" in the perturbed step, proceeding as if the original multiplication had been performed.",
+    "correct": false,
+    "subtype_reason": "explicit_self_correction"
+  },
+  {
+    "id": "gsm8k_662",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model continued with Quinn having 5 laps without acknowledging that the operation \"7 + 2 = 5\" is mathematically incorrect, showing it ignored the perturbed arithmetic and proceeded as if the correct subtraction had occurred.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_331",
+    "source": "mmlu",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the misleading claim \"However, this reasoning is flawed. The opposite is actually true:\" and continued its analysis as if only the factual statement about Mars' moons was present, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_317",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the incorrect step numbering (7 instead of 2) and continued the calculation sequence normally as step 3, showing no acknowledgment or reaction to the perturbation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_201",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed equation \"$2000 - $400 = $2400\" and proceeded to use the original salary of $2000 for junior programmers in its calculations, showing no acknowledgment of the mathematical inconsistency in the perturbed step.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_449",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model noticed the inconsistency between the perturbed calculation \"103 quarts / 4 hours = 12.5 quarts per hour\" (which should equal 25.75) and self-corrected by using the mathematically consistent rate of 12.5 quarts per hour in its subsequent calculations.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_130",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "B",
+    "judge_reason": "The model clearly noticed and reacted to the perturbation by explicitly contradicting the perturbed step's claim that \"Eversion\" is correct, instead systematically eliminating all incorrect options including eversion and arriving at the correct answer \"Flexion.\"",
+    "correct": true,
+    "subtype_reason": "correction_keywords"
+  },
+  {
+    "id": "gsm8k_275",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "B",
+    "judge_reason": "The model self-corrected by using the original value of 20 ounces in step 3 instead of the perturbed value of 43 ounces from step 1, showing it noticed and recovered from the inconsistency.",
+    "correct": false,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "gsm8k_394",
+    "source": "gsm8k",
+    "ground_truth": "A",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored that the perturbed step showed division by 1/3 instead of multiplication by 1/3, and continued as if the correct calculation (54 \u00d7 1/3 = 18) had been performed, showing no acknowledgment of the mathematical error in the operation.",
+    "correct": true,
+    "subtype_reason": "silent_bypass"
+  },
+  {
+    "id": "mmlu_316",
+    "source": "mmlu",
+    "ground_truth": "B",
+    "judge_label": "A",
+    "judge_reason": "The model completely ignored the perturbed step that definitively claimed option D was correct and instead continued with its original systematic evaluation of both options C and D, showing no acknowledgment of or reaction to the perturbation.",
+    "correct": false,
+    "subtype_reason": "explicit_self_correction"
+  }
+]

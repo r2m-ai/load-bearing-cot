@@ -1,0 +1,98 @@
+{
+  "n_unique_composite_records": 15336,
+  "n_complete_4_variants": 15335,
+  "per_variant_label_distribution": {
+    "strict_bypass": {
+      "A": 614,
+      "B": 14722,
+      "null": 0
+    },
+    "strict_correction": {
+      "A": 13673,
+      "B": 1662,
+      "null": 1
+    },
+    "reference_sensitive": {
+      "A": 6184,
+      "B": 9151,
+      "null": 1
+    },
+    "original": {
+      "A": 8252,
+      "B": 7084,
+      "null": 0
+    }
+  },
+  "stratum_sizes": {
+    "agree": 1827,
+    "split_2_2": 4852,
+    "majority_3_1": 8656,
+    "incomplete": 1
+  },
+  "agreement_rate": 0.11913145539906103,
+  "by_source": {
+    "gsm8k": {
+      "agree": 34,
+      "split_2_2": 748,
+      "majority_3_1": 1322
+    },
+    "mmlu": {
+      "agree": 1370,
+      "split_2_2": 2566,
+      "majority_3_1": 4296
+    },
+    "bbh": {
+      "agree": 423,
+      "split_2_2": 1538,
+      "majority_3_1": 3038
+    },
+    "?": {
+      "incomplete": 1
+    }
+  },
+  "by_strategy_agree_rate": {
+    "arithmetic_change": {
+      "agree": 16,
+      "total": 434,
+      "rate": 0.03686635944700461
+    },
+    "operation_swap": {
+      "agree": 18,
+      "total": 1670,
+      "rate": 0.010778443113772455
+    },
+    "premise_contradiction": {
+      "agree": 621,
+      "total": 3067,
+      "rate": 0.20247799152266058
+    },
+    "wrong_elimination": {
+      "agree": 200,
+      "total": 2541,
+      "rate": 0.07870916961826052
+    },
+    "confidence_injection": {
+      "agree": 318,
+      "total": 2419,
+      "rate": 0.13145928069450186
+    },
+    "false_analogy": {
+      "agree": 314,
+      "total": 2621,
+      "rate": 0.1198016024418161
+    },
+    "reversed_logic": {
+      "agree": 340,
+      "total": 2583,
+      "rate": 0.1316298877274487
+    },
+    "?": {
+      "agree": 0,
+      "total": 1,
+      "rate": 0.0
+    }
+  },
+  "total_tokens": 19423741,
+  "estimated_cost_usd_haiku": 4.86,
+  "note": "Stratification uses composite (id, perturbation_strategy, perturbation_point) \u2014 the unique key for each perturbed continuation. The earlier summary.json (now removed) used id only, collapsing multiple continuations of the same base question and incorrectly reported 9.3% agreement; the corrected rate is 11.9%."
+}

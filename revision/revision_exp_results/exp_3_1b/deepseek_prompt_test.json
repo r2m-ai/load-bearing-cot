@@ -1,0 +1,110 @@
+{
+  "current": {
+    "n": 100,
+    "accuracy_pct": 38.0,
+    "think_rate_pct": 80.0,
+    "avg_tokens_per_response": 857.15,
+    "wall_time_s": 32.61705231666565,
+    "results": [
+      {
+        "id": "gsm8k_0",
+        "extracted": "10000",
+        "ref": "70000",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 841,
+        "response_preview": "First, I need to determine the total cost Josh incurred in purchasing and renovating the house. He bought the house for $80,000 and spent an additional $50,000 on repairs, so the total cost is $130,000.\n\nNext, I calculate the increase in the house's value, which is a 150% of the original purchase pr"
+      },
+      {
+        "id": "gsm8k_1",
+        "extracted": "128",
+        "ref": "64",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 910,
+        "response_preview": "First, I need to determine the cost of each glass. The initial price is $5, and the second glass is 60% of that, so I'll calculate 60% of $5.\n\nNext, I'll find out how much the second glass costs by multiplying 5 by 0.6, which equals $3.\n\nThen, I'll add the cost of the first glass at $5 to the discou"
+      },
+      {
+        "id": "gsm8k_2",
+        "extracted": "180",
+        "ref": "260",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 1220,
+        "response_preview": "Okay, so I need to figure out how many sheep Toulouse, Charleston, and Seattle have together. Let me start by reading the problem again. It says that Toulouse has twice as many sheep as Charleston, and Charleston has 4 times as many sheep as Seattle. And we know Seattle has 20 sheep. Hmm, let me bre"
+      }
+    ]
+  },
+  "plain": {
+    "n": 100,
+    "accuracy_pct": 42.0,
+    "think_rate_pct": 90.0,
+    "avg_tokens_per_response": 560.41,
+    "wall_time_s": 30.02470088005066,
+    "results": [
+      {
+        "id": "gsm8k_0",
+        "extracted": "60000",
+        "ref": "70000",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 1021,
+        "response_preview": "First, I need to determine the total cost Josh incurred in purchasing and renovating the house. He bought the house for $80,000 and spent an additional $50,000 on repairs, so the total cost is $130,000.\n\nNext, I'll calculate the increase in the house's value, which is 150% of the original purchase p"
+      },
+      {
+        "id": "gsm8k_1",
+        "extracted": "16",
+        "ref": "64",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 1224,
+        "response_preview": "First, I need to determine the cost of one regular glass, which is $5.\n\nSince every second glass is discounted by 60%, the discounted price is 40% of the original price. To find the discounted price, I'll calculate 60% of $5 and subtract it from the original price: $5 minus $3 equals $2.\n\nNext, I'll"
+      },
+      {
+        "id": "gsm8k_2",
+        "extracted": "200",
+        "ref": "260",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 1093,
+        "response_preview": "First, I note that Seattle has 20 sheep.\n\nSince Charleston has 4 times as many sheep as Seattle, I calculate Charleston's sheep by multiplying 4 by 20, which equals 80 sheep.\n\nToulouse has twice as many sheep as Charleston, so I multiply 80 by 2 to get 160 sheep.\n\nFinally, I add the number of sheep "
+      }
+    ]
+  },
+  "r1_official": {
+    "n": 100,
+    "accuracy_pct": 44.0,
+    "think_rate_pct": 100.0,
+    "avg_tokens_per_response": 308.71,
+    "wall_time_s": 27.02199959754944,
+    "results": [
+      {
+        "id": "gsm8k_0",
+        "extracted": "0",
+        "ref": "70000",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 1140,
+        "response_preview": "First, I need to determine the total cost Josh incurred in purchasing and improving the house. He bought the house for $80,000 and spent an additional $50,000 on repairs, so the total cost is $130,000.\n\nNext, I'll calculate the increase in the house's value, which is a 150% of the original purchase "
+      },
+      {
+        "id": "gsm8k_1",
+        "extracted": "64",
+        "ref": "64",
+        "correct": true,
+        "has_close_think": true,
+        "response_len_chars": 1203,
+        "response_preview": "First, I need to determine the discounted price of each glass. Since every second glass is 60% of the original price of $5, I'll calculate 60% of $5, which is $3.\n\nNext, I'll figure out how many sets of two glasses Kylar is buying. He wants to purchase 16 glasses, so there are 8 sets of two glasses."
+      },
+      {
+        "id": "gsm8k_2",
+        "extracted": "180",
+        "ref": "260",
+        "correct": false,
+        "has_close_think": true,
+        "response_len_chars": 768,
+        "response_preview": "First, I note that Seattle has 20 sheep.\n\nSince Charleston has 4 times as many sheep as Seattle, I calculate Charleston's sheep by multiplying 4 by 20, which equals 80 sheep.\n\nNext, Toulouse has twice as many sheep as Charleston, so I multiply 80 by 2 to get 160 sheep.\n\nFinally, I add the number of "
+      }
+    ]
+  }
+}

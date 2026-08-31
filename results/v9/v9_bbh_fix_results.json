@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-04-05T16:14:22.553784",
+  "bug_description": "BBH reference_answer format '(A)' vs perturbed_answer 'A' caused 3229 misclassifications",
+  "misclassified_count": 3229,
+  "corrections": {
+    "A": 1392,
+    "B": 1837,
+    "unchanged": 0
+  },
+  "judge_tokens": 612750,
+  "estimated_cost_usd": 0.15,
+  "corrected_bbh_labels": {
+    "silent_bypass": 3163,
+    "error_propagation": 3460,
+    "self_correction": 1837,
+    "unclear": 3
+  },
+  "corrected_rates": {
+    "bbh": {
+      "A": 37.4,
+      "B": 21.7,
+      "C": 40.9
+    }
+  },
+  "all_dataset_rates": {
+    "gsm8k": {
+      "A": 94.5,
+      "B": 1.6,
+      "C": 3.9,
+      "n": 2189
+    },
+    "mmlu": {
+      "A": 41.5,
+      "B": 36.3,
+      "C": 22.3,
+      "n": 10589
+    },
+    "bbh": {
+      "A": 37.4,
+      "B": 21.7,
+      "C": 40.9,
+      "n": 8460
+    }
+  }
+}

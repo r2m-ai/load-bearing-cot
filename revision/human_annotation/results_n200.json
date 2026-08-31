@@ -1,0 +1,112 @@
+{
+  "coverage": {
+    "labeled": 200,
+    "total": 200
+  },
+  "calibration": {
+    "BBH_type_a": {
+      "n": 20,
+      "agree": 19
+    },
+    "BBH_type_c": {
+      "n": 37,
+      "agree": 14
+    },
+    "GSM_type_c": {
+      "n": 10,
+      "agree": 10
+    }
+  },
+  "overall": {
+    "n": 200,
+    "agree_auto": 131,
+    "agree_judge": 79,
+    "n_judge": 107
+  },
+  "by_source": {
+    "gsm8k": {
+      "n": 53,
+      "agree_auto": 43,
+      "n_judge": 42,
+      "agree_judge": 32
+    },
+    "mmlu": {
+      "n": 76,
+      "agree_auto": 49,
+      "n_judge": 42,
+      "agree_judge": 26
+    },
+    "bbh": {
+      "n": 71,
+      "agree_auto": 39,
+      "n_judge": 23,
+      "agree_judge": 21
+    }
+  },
+  "by_stratum": {
+    "BBH_type_a": {
+      "n": 20,
+      "agree_auto": 19,
+      "n_judge": 20,
+      "agree_judge": 19
+    },
+    "BBH_type_c": {
+      "n": 37,
+      "agree_auto": 14,
+      "n_judge": 0,
+      "agree_judge": 0
+    },
+    "BBH_unclear": {
+      "n": 3,
+      "agree_auto": 1,
+      "n_judge": 0,
+      "agree_judge": 0
+    },
+    "GSM_judge_to_a": {
+      "n": 30,
+      "agree_auto": 30,
+      "n_judge": 30,
+      "agree_judge": 30
+    },
+    "GSM_judge_to_b": {
+      "n": 10,
+      "agree_auto": 0,
+      "n_judge": 10,
+      "agree_judge": 0
+    },
+    "GSM_type_c": {
+      "n": 10,
+      "agree_auto": 10,
+      "n_judge": 0,
+      "agree_judge": 0
+    },
+    "MMLU_judge_to_a": {
+      "n": 20,
+      "agree_auto": 7,
+      "n_judge": 20,
+      "agree_judge": 7
+    },
+    "MMLU_judge_to_b": {
+      "n": 20,
+      "agree_auto": 18,
+      "n_judge": 20,
+      "agree_judge": 18
+    },
+    "MMLU_rule_b": {
+      "n": 20,
+      "agree_auto": 10,
+      "n_judge": 0,
+      "agree_judge": 0
+    },
+    "RANDOM_baseline": {
+      "n": 30,
+      "agree_auto": 22,
+      "n_judge": 7,
+      "agree_judge": 5
+    }
+  },
+  "confidence": {
+    "medium": 61,
+    "high": 139
+  }
+}

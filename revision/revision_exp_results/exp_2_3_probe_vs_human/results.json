@@ -1,0 +1,17 @@
+{
+ "n_annotation_rows": 200,
+ "n_annotated": 198,
+ "n_in_training": 15,
+ "n_eval": 198,
+ "probe_layer": 10,
+ "probe_holdout_accuracy_on_training": 0.7815,
+ "agreement_overall": {
+  "n": 198,
+  "agree": 132,
+  "rate": 0.6666666666666666,
+  "wilson_ci95": [
+   0.5983826263796316,
+   0.7286064581302018
+  ]
+ }
+}

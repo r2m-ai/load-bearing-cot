@@ -1,0 +1,29 @@
+{
+  "n_records_unique_composite": 15336,
+  "stratum_sizes": {
+    "agree": 1827,
+    "split_2_2": 4852,
+    "majority_3_1": 8656,
+    "incomplete": 1
+  },
+  "agreement_rate": 0.11913145539906103,
+  "by_source": {
+    "gsm8k": {
+      "agree": 34,
+      "split_2_2": 748,
+      "majority_3_1": 1322
+    },
+    "mmlu": {
+      "agree": 1370,
+      "split_2_2": 2566,
+      "majority_3_1": 4296
+    },
+    "bbh": {
+      "agree": 423,
+      "split_2_2": 1538,
+      "majority_3_1": 3038,
+      "incomplete": 1
+    }
+  },
+  "note": "Corrected stratification using composite key (id, strategy, position). The earlier summary.json aggregated by id only, which collapsed multiple continuations of the same base question."
+}

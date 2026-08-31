@@ -1,0 +1,329 @@
+{
+  "timestamp": "2026-05-22T20:37:16.452629",
+  "n_total": 28584,
+  "n_by_source": {
+    "main_expanded_pairs": 21238,
+    "exp_1_1_text_on_gsm8k": 5400,
+    "exp_1_3_numerical_on_hard": 1946
+  },
+  "n_by_task_bucket": {
+    "mmlu": 11054,
+    "bbh_other": 9002,
+    "gsm8k": 7589,
+    "bbh_multistep_arith": 939
+  },
+  "n_by_perturbation_type": {
+    "text": 24449,
+    "numerical": 4135
+  },
+  "cell_summary": {
+    "bbh_multistep_arith|numerical": {
+      "n": 939,
+      "c_count": 606,
+      "c_rate": 0.645367412140575,
+      "wilson_lo": 0.6142321473676949,
+      "wilson_hi": 0.6753180803693924
+    },
+    "bbh_other|numerical": {
+      "n": 542,
+      "c_count": 98,
+      "c_rate": 0.18081180811808117,
+      "wilson_lo": 0.1506931577950873,
+      "wilson_hi": 0.21542331262416986
+    },
+    "bbh_other|text": {
+      "n": 8460,
+      "c_count": 3460,
+      "c_rate": 0.408983451536643,
+      "wilson_lo": 0.3985503812963728,
+      "wilson_hi": 0.4194991436380257
+    },
+    "gsm8k|numerical": {
+      "n": 2189,
+      "c_count": 85,
+      "c_rate": 0.03883051621745089,
+      "wilson_lo": 0.03151207185513353,
+      "wilson_hi": 0.04776478972939679
+    },
+    "gsm8k|text": {
+      "n": 5400,
+      "c_count": 352,
+      "c_rate": 0.06518518518518518,
+      "wilson_lo": 0.05890528157750657,
+      "wilson_hi": 0.0720833099459755
+    },
+    "mmlu|numerical": {
+      "n": 465,
+      "c_count": 94,
+      "c_rate": 0.2021505376344086,
+      "wilson_lo": 0.1681561749616084,
+      "wilson_hi": 0.241025945396312
+    },
+    "mmlu|text": {
+      "n": 10589,
+      "c_count": 2357,
+      "c_rate": 0.22258947964869205,
+      "wilson_lo": 0.21476758301910726,
+      "wilson_hi": 0.23061258768032056
+    }
+  },
+  "deviance_partition": {
+    "n": 28584,
+    "null_deviance": 31939.382919484622,
+    "full_deviance": 28329.18079447696,
+    "total_explained": 3610.2021250076614,
+    "components": {
+      "type": {
+        "deviance_explained": 29.397220516035304,
+        "df": 1,
+        "p_value": 5.896214805289901e-08,
+        "fraction_of_total": 0.00814281846226904
+      },
+      "difficulty": {
+        "deviance_explained": 3567.022863970491,
+        "df": 1,
+        "p_value": 0.0,
+        "fraction_of_total": 0.9880396555256367
+      },
+      "interaction": {
+        "deviance_explained": 13.782040521135059,
+        "df": 1,
+        "p_value": 0.00020528933354801993,
+        "fraction_of_total": 0.0038175260120943536
+      }
+    },
+    "full_model_aic": 28337.18079447696,
+    "full_model_bic": -264918.8357890418
+  },
+  "clustered_sensitivity": {
+    "method": "weighted GLM on per-base_question aggregated rates",
+    "n_aggregated_rows": 8092,
+    "n_unique_base_questions": 7104,
+    "coefficients": {
+      "Intercept": {
+        "coef": -2.399580287996784,
+        "se": 0.03608798696989957,
+        "p_value": 0.0,
+        "ci95": [
+          -2.470311442732338,
+          -2.32884913326123
+        ]
+      },
+      "pt_num": {
+        "coef": -0.7974765813460902,
+        "se": 0.10088484782555243,
+        "p_value": 2.6832064145610233e-15,
+        "ci95": [
+          -0.995207249669977,
+          -0.5997459130222035
+        ]
+      },
+      "difficulty": {
+        "coef": 1.0393993365276337,
+        "se": 0.023410475388861925,
+        "p_value": 0.0,
+        "ci95": [
+          0.9935156479045031,
+          1.0852830251507644
+        ]
+      },
+      "pt_num:difficulty": {
+        "coef": 0.17131098845793538,
+        "se": 0.04695728478176657,
+        "p_value": 0.0002640529105087564,
+        "ci95": [
+          0.07927640147388214,
+          0.2633455754419886
+        ]
+      }
+    },
+    "aic": 24433.496985147784,
+    "deviance": 16686.03055696095
+  },
+  "within_mmlu_subject": {
+    "by_subject": {
+      "abstract_algebra": {
+        "n": 161,
+        "c_count": 64,
+        "c_rate": 0.39751552795031053
+      },
+      "anatomy": {
+        "n": 288,
+        "c_count": 72,
+        "c_rate": 0.25
+      },
+      "astronomy": {
+        "n": 357,
+        "c_count": 79,
+        "c_rate": 0.22128851540616246
+      },
+      "business_ethics": {
+        "n": 198,
+        "c_count": 44,
+        "c_rate": 0.2222222222222222
+      },
+      "clinical_knowledge": {
+        "n": 603,
+        "c_count": 111,
+        "c_rate": 0.18407960199004975
+      },
+      "college_biology": {
+        "n": 378,
+        "c_count": 56,
+        "c_rate": 0.14814814814814814
+      },
+      "college_chemistry": {
+        "n": 156,
+        "c_count": 40,
+        "c_rate": 0.2564102564102564
+      },
+      "college_computer_science": {
+        "n": 183,
+        "c_count": 77,
+        "c_rate": 0.4207650273224044
+      },
+      "college_mathematics": {
+        "n": 133,
+        "c_count": 58,
+        "c_rate": 0.43609022556390975
+      },
+      "college_medicine": {
+        "n": 378,
+        "c_count": 81,
+        "c_rate": 0.21428571428571427
+      },
+      "college_physics": {
+        "n": 204,
+        "c_count": 80,
+        "c_rate": 0.39215686274509803
+      },
+      "computer_security": {
+        "n": 234,
+        "c_count": 41,
+        "c_rate": 0.1752136752136752
+      },
+      "conceptual_physics": {
+        "n": 492,
+        "c_count": 133,
+        "c_rate": 0.2703252032520325
+      },
+      "econometrics": {
+        "n": 200,
+        "c_count": 68,
+        "c_rate": 0.34
+      },
+      "electrical_engineering": {
+        "n": 264,
+        "c_count": 68,
+        "c_rate": 0.25757575757575757
+      },
+      "elementary_mathematics": {
+        "n": 732,
+        "c_count": 155,
+        "c_rate": 0.21174863387978143
+      },
+      "formal_logic": {
+        "n": 216,
+        "c_count": 79,
+        "c_rate": 0.36574074074074076
+      },
+      "global_facts": {
+        "n": 54,
+        "c_count": 29,
+        "c_rate": 0.5370370370370371
+      },
+      "high_school_biology": {
+        "n": 840,
+        "c_count": 117,
+        "c_rate": 0.1392857142857143
+      },
+      "high_school_chemistry": {
+        "n": 438,
+        "c_count": 134,
+        "c_rate": 0.3059360730593607
+      },
+      "high_school_computer_science": {
+        "n": 240,
+        "c_count": 40,
+        "c_rate": 0.16666666666666666
+      },
+      "high_school_european_history": {
+        "n": 402,
+        "c_count": 52,
+        "c_rate": 0.12935323383084577
+      },
+      "high_school_geography": {
+        "n": 519,
+        "c_count": 51,
+        "c_rate": 0.09826589595375723
+      },
+      "high_school_government_and_politics": {
+        "n": 543,
+        "c_count": 48,
+        "c_rate": 0.08839779005524862
+      },
+      "high_school_macroeconomics": {
+        "n": 942,
+        "c_count": 220,
+        "c_rate": 0.23354564755838642
+      },
+      "high_school_mathematics": {
+        "n": 729,
+        "c_count": 204,
+        "c_rate": 0.27983539094650206
+      },
+      "high_school_microeconomics": {
+        "n": 582,
+        "c_count": 132,
+        "c_rate": 0.2268041237113402
+      },
+      "high_school_physics": {
+        "n": 267,
+        "c_count": 94,
+        "c_rate": 0.352059925093633
+      },
+      "high_school_psychology": {
+        "n": 321,
+        "c_count": 24,
+        "c_rate": 0.07476635514018691
+      }
+    },
+    "logistic_slope": 0.0692399036379522,
+    "logistic_slope_ci95": [
+      0.06292490367679494,
+      0.07555490359910945
+    ],
+    "p_value": 1.941889457004528e-102,
+    "rank_map": {
+      "high_school_psychology": 0,
+      "high_school_government_and_politics": 1,
+      "high_school_geography": 2,
+      "high_school_european_history": 3,
+      "high_school_biology": 4,
+      "college_biology": 5,
+      "high_school_computer_science": 6,
+      "computer_security": 7,
+      "clinical_knowledge": 8,
+      "elementary_mathematics": 9,
+      "college_medicine": 10,
+      "astronomy": 11,
+      "business_ethics": 12,
+      "high_school_microeconomics": 13,
+      "high_school_macroeconomics": 14,
+      "anatomy": 15,
+      "college_chemistry": 16,
+      "electrical_engineering": 17,
+      "conceptual_physics": 18,
+      "high_school_mathematics": 19,
+      "high_school_chemistry": 20,
+      "econometrics": 21,
+      "high_school_physics": 22,
+      "formal_logic": 23,
+      "college_physics": 24,
+      "abstract_algebra": 25,
+      "college_computer_science": 26,
+      "college_mathematics": 27,
+      "global_facts": 28
+    }
+  }
+}

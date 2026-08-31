@@ -1,0 +1,40 @@
+Category,Setting,Behavior,Count,Percentage
+Position,early (25%),Silent Bypass,2620,37.2%
+Position,early (25%),Self-Correction,2066,29.3%
+Position,early (25%),Error Propagation,2361,33.5%
+Position,middle (50%),Silent Bypass,3177,44.8%
+Position,middle (50%),Self-Correction,1974,27.8%
+Position,middle (50%),Error Propagation,1944,27.4%
+Position,late (75%),Silent Bypass,3825,53.9%
+Position,late (75%),Self-Correction,1674,23.6%
+Position,late (75%),Error Propagation,1597,22.5%
+Strategy,arithmetic_change,Silent Bypass,432,90.9%
+Strategy,arithmetic_change,Self-Correction,2,0.4%
+Strategy,arithmetic_change,Error Propagation,41,8.6%
+Strategy,confidence_injection,Silent Bypass,1495,39.0%
+Strategy,confidence_injection,Self-Correction,925,24.1%
+Strategy,confidence_injection,Error Propagation,1411,36.8%
+Strategy,false_analogy,Silent Bypass,1477,39.7%
+Strategy,false_analogy,Self-Correction,1144,30.7%
+Strategy,false_analogy,Error Propagation,1104,29.6%
+Strategy,operation_swap,Silent Bypass,1637,95.5%
+Strategy,operation_swap,Self-Correction,33,1.9%
+Strategy,operation_swap,Error Propagation,44,2.6%
+Strategy,premise_contradiction,Silent Bypass,1724,45.4%
+Strategy,premise_contradiction,Self-Correction,1343,35.3%
+Strategy,premise_contradiction,Error Propagation,733,19.3%
+Strategy,reversed_logic,Silent Bypass,1432,37.3%
+Strategy,reversed_logic,Self-Correction,1151,30.0%
+Strategy,reversed_logic,Error Propagation,1259,32.8%
+Strategy,wrong_elimination,Silent Bypass,1425,37.0%
+Strategy,wrong_elimination,Self-Correction,1116,29.0%
+Strategy,wrong_elimination,Error Propagation,1310,34.0%
+Source,GSM8K,Silent Bypass,2069,94.5%
+Source,GSM8K,Self-Correction,35,1.6%
+Source,GSM8K,Error Propagation,85,3.9%
+Source,MMLU,Silent Bypass,4390,41.5%
+Source,MMLU,Self-Correction,3842,36.3%
+Source,MMLU,Error Propagation,2357,22.3%
+Source,BBH,Silent Bypass,3163,37.4%
+Source,BBH,Self-Correction,1837,21.7%
+Source,BBH,Error Propagation,3460,40.9%

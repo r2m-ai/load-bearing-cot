@@ -1,0 +1,225 @@
+{
+  "timestamp": "2026-04-05T14:48:41.670083",
+  "n_examples_judged": 1000,
+  "n_type_c_fixed": 9131,
+  "total_tokens": 1550699,
+  "estimated_cost_usd": 0.39,
+  "variants": {
+    "strict_bypass": {
+      "label_distribution": {
+        "A": 87,
+        "B": 2454,
+        "C": 9131
+      },
+      "dataset_c_rates": {
+        "gsm8k": 14.9,
+        "mmlu": 58.3,
+        "bbh": 94.8
+      },
+      "mmlu_subject_c_rates": {
+        "college_mathematics": 92.2,
+        "high_school_macroeconomics": 61.5,
+        "elementary_mathematics": 57.2,
+        "high_school_biology": 46.6,
+        "clinical_knowledge": 48.9,
+        "high_school_microeconomics": 58.9,
+        "college_medicine": 57.9,
+        "conceptual_physics": 63.3,
+        "computer_security": 45.6,
+        "anatomy": 61.0,
+        "econometrics": 71.6,
+        "high_school_chemistry": 80.7,
+        "high_school_mathematics": 71.1,
+        "high_school_geography": 35.4,
+        "astronomy": 59.4,
+        "electrical_engineering": 59.6,
+        "high_school_government_and_politics": 32.4,
+        "high_school_psychology": 20.9,
+        "business_ethics": 56.4,
+        "college_computer_science": 85.6,
+        "high_school_computer_science": 49.4,
+        "abstract_algebra": 85.2,
+        "college_chemistry": 72.7,
+        "college_biology": 40.9,
+        "high_school_physics": 72.9,
+        "formal_logic": 80.2,
+        "college_physics": 72.1,
+        "high_school_european_history": 40.3
+      },
+      "tokens_used": 345386
+    },
+    "strict_correction": {
+      "label_distribution": {
+        "A": 2279,
+        "B": 262,
+        "C": 9131
+      },
+      "dataset_c_rates": {
+        "gsm8k": 14.9,
+        "mmlu": 58.3,
+        "bbh": 94.8
+      },
+      "mmlu_subject_c_rates": {
+        "college_mathematics": 92.2,
+        "high_school_macroeconomics": 61.5,
+        "elementary_mathematics": 57.2,
+        "high_school_biology": 46.6,
+        "clinical_knowledge": 48.9,
+        "high_school_microeconomics": 58.9,
+        "college_medicine": 57.9,
+        "conceptual_physics": 63.3,
+        "computer_security": 45.6,
+        "anatomy": 61.0,
+        "econometrics": 71.6,
+        "high_school_chemistry": 80.7,
+        "high_school_mathematics": 71.1,
+        "high_school_geography": 35.4,
+        "astronomy": 59.4,
+        "electrical_engineering": 59.6,
+        "high_school_government_and_politics": 32.4,
+        "high_school_psychology": 20.9,
+        "business_ethics": 56.4,
+        "college_computer_science": 85.6,
+        "high_school_computer_science": 49.4,
+        "abstract_algebra": 85.2,
+        "college_chemistry": 72.7,
+        "college_biology": 40.9,
+        "high_school_physics": 72.9,
+        "formal_logic": 80.2,
+        "college_physics": 72.1,
+        "high_school_european_history": 40.3
+      },
+      "tokens_used": 334388
+    },
+    "causal_final_answer": {
+      "label_distribution": {
+        "A": 0,
+        "B": 0,
+        "C": 19417
+      },
+      "dataset_c_rates": {
+        "gsm8k": 78.0,
+        "mmlu": 90.8,
+        "bbh": 95.7
+      },
+      "mmlu_subject_c_rates": {
+        "high_school_macroeconomics": 92.3,
+        "college_mathematics": 96.7,
+        "anatomy": 91.7,
+        "clinical_knowledge": 90.5,
+        "computer_security": 93.6,
+        "electrical_engineering": 89.4,
+        "elementary_mathematics": 88.1,
+        "high_school_biology": 89.8,
+        "college_medicine": 92.3,
+        "high_school_microeconomics": 89.7,
+        "conceptual_physics": 94.1,
+        "high_school_geography": 94.4,
+        "astronomy": 89.9,
+        "econometrics": 95.5,
+        "high_school_chemistry": 93.8,
+        "high_school_mathematics": 89.5,
+        "high_school_government_and_politics": 86.0,
+        "high_school_psychology": 82.2,
+        "business_ethics": 90.9,
+        "college_computer_science": 95.1,
+        "high_school_computer_science": 92.9,
+        "college_biology": 87.3,
+        "college_chemistry": 93.6,
+        "abstract_algebra": 93.3,
+        "global_facts": 100.0,
+        "college_physics": 88.7,
+        "high_school_physics": 93.3,
+        "formal_logic": 91.5,
+        "high_school_european_history": 89.8
+      },
+      "tokens_used": 287151
+    },
+    "reference_sensitive": {
+      "label_distribution": {
+        "A": 1031,
+        "B": 1510,
+        "C": 9131
+      },
+      "dataset_c_rates": {
+        "gsm8k": 14.9,
+        "mmlu": 58.3,
+        "bbh": 94.8
+      },
+      "mmlu_subject_c_rates": {
+        "college_mathematics": 92.2,
+        "high_school_macroeconomics": 61.5,
+        "elementary_mathematics": 57.2,
+        "high_school_biology": 46.6,
+        "clinical_knowledge": 48.9,
+        "high_school_microeconomics": 58.9,
+        "college_medicine": 57.9,
+        "conceptual_physics": 63.3,
+        "computer_security": 45.6,
+        "anatomy": 61.0,
+        "econometrics": 71.6,
+        "high_school_chemistry": 80.7,
+        "high_school_mathematics": 71.1,
+        "high_school_geography": 35.4,
+        "astronomy": 59.4,
+        "electrical_engineering": 59.6,
+        "high_school_government_and_politics": 32.4,
+        "high_school_psychology": 20.9,
+        "business_ethics": 56.4,
+        "college_computer_science": 85.6,
+        "high_school_computer_science": 49.4,
+        "abstract_algebra": 85.2,
+        "college_chemistry": 72.7,
+        "college_biology": 40.9,
+        "high_school_physics": 72.9,
+        "formal_logic": 80.2,
+        "college_physics": 72.1,
+        "high_school_european_history": 40.3
+      },
+      "tokens_used": 314391
+    },
+    "original": {
+      "label_distribution": {
+        "A": 1282,
+        "B": 1259,
+        "C": 9131
+      },
+      "dataset_c_rates": {
+        "gsm8k": 14.9,
+        "mmlu": 58.3,
+        "bbh": 94.8
+      },
+      "mmlu_subject_c_rates": {
+        "college_mathematics": 92.2,
+        "high_school_macroeconomics": 61.5,
+        "elementary_mathematics": 57.2,
+        "high_school_biology": 46.6,
+        "clinical_knowledge": 48.9,
+        "high_school_microeconomics": 58.9,
+        "college_medicine": 57.9,
+        "conceptual_physics": 63.3,
+        "computer_security": 45.6,
+        "anatomy": 61.0,
+        "econometrics": 71.6,
+        "high_school_chemistry": 80.7,
+        "high_school_mathematics": 71.1,
+        "high_school_geography": 35.4,
+        "astronomy": 59.4,
+        "electrical_engineering": 59.6,
+        "high_school_government_and_politics": 32.4,
+        "high_school_psychology": 20.9,
+        "business_ethics": 56.4,
+        "college_computer_science": 85.6,
+        "high_school_computer_science": 49.4,
+        "abstract_algebra": 85.2,
+        "college_chemistry": 72.7,
+        "college_biology": 40.9,
+        "high_school_physics": 72.9,
+        "formal_logic": 80.2,
+        "college_physics": 72.1,
+        "high_school_european_history": 40.3
+      },
+      "tokens_used": 269383
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "seed": 20260829,
+  "n": 500,
+  "design": [
+    {
+      "stratum": "GSM_split22",
+      "source": "gsm8k",
+      "tier": "split_2_2",
+      "n": 60
+    },
+    {
+      "stratum": "MMLU_split22",
+      "source": "mmlu",
+      "tier": "split_2_2",
+      "n": 60
+    },
+    {
+      "stratum": "BBH_split22",
+      "source": "bbh",
+      "tier": "split_2_2",
+      "n": 60
+    },
+    {
+      "stratum": "GSM_majority31",
+      "source": "gsm8k",
+      "tier": "majority_3_1",
+      "n": 40
+    },
+    {
+      "stratum": "MMLU_majority31",
+      "source": "mmlu",
+      "tier": "majority_3_1",
+      "n": 40
+    },
+    {
+      "stratum": "BBH_majority31",
+      "source": "bbh",
+      "tier": "majority_3_1",
+      "n": 40
+    },
+    {
+      "stratum": "GSM_agree",
+      "source": "gsm8k",
+      "tier": "agree",
+      "n": 25
+    },
+    {
+      "stratum": "MMLU_agree",
+      "source": "mmlu",
+      "tier": "agree",
+      "n": 25
+    },
+    {
+      "stratum": "BBH_agree",
+      "source": "bbh",
+      "tier": "agree",
+      "n": 25
+    },
+    {
+      "stratum": "GSM_type_c",
+      "source": "gsm8k",
+      "tier": "type_c",
+      "n": 15
+    },
+    {
+      "stratum": "MMLU_type_c",
+      "source": "mmlu",
+      "tier": "type_c",
+      "n": 15
+    },
+    {
+      "stratum": "BBH_type_c",
+      "source": "bbh",
+      "tier": "type_c",
+      "n": 35
+    },
+    {
+      "stratum": "RANDOM_baseline",
+      "source": null,
+      "tier": "random",
+      "n": 60
+    }
+  ],
+  "by_source": {
+    "gsm8k": 148,
+    "mmlu": 167,
+    "bbh": 185
+  },
+  "by_stratum": {
+    "GSM_split22": 60,
+    "MMLU_type_c": 15,
+    "MMLU_majority31": 40,
+    "BBH_type_c": 35,
+    "MMLU_split22": 60,
+    "RANDOM_baseline": 60,
+    "BBH_split22": 60,
+    "GSM_majority31": 40,
+    "GSM_type_c": 15,
+    "BBH_agree": 25,
+    "GSM_agree": 25,
+    "BBH_majority31": 40,
+    "MMLU_agree": 25
+  },
+  "by_final_label": {
+    "A": 300,
+    "C": 81,
+    "B": 119
+  },
+  "by_variant_agreement": {
+    "split_2_2": 194,
+    "not_covered": 81,
+    "majority_3_1": 144,
+    "agree": 81
+  },
+  "n_empty_extracted_answer": 46,
+  "n_judge_labeled": 235,
+  "excluded_previous_n200": 200
+}

@@ -1,0 +1,41 @@
+{
+  "gsm8k": {
+    "status": "FAIL",
+    "n": 50,
+    "step_compliance_rate": 0.0,
+    "extract_rate": 1.0,
+    "accuracy": 0.76,
+    "thresholds": {
+      "step_compliance_rate_min": 0.4,
+      "extract_rate_min": 0.6,
+      "accuracy_min": 0.2
+    },
+    "elapsed_s": 43.16095972061157
+  },
+  "mmlu": {
+    "status": "FAIL",
+    "n": 50,
+    "step_compliance_rate": 0.0,
+    "extract_rate": 1.0,
+    "accuracy": 0.7,
+    "thresholds": {
+      "step_compliance_rate_min": 0.4,
+      "extract_rate_min": 0.6,
+      "accuracy_min": 0.2
+    },
+    "elapsed_s": 45.477259159088135
+  },
+  "bbh": {
+    "status": "FAIL",
+    "n": 50,
+    "step_compliance_rate": 0.22,
+    "extract_rate": 1.0,
+    "accuracy": 0.36,
+    "thresholds": {
+      "step_compliance_rate_min": 0.4,
+      "extract_rate_min": 0.6,
+      "accuracy_min": 0.2
+    },
+    "elapsed_s": 42.70567345619202
+  }
+}

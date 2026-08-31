@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-04-05T16:07:13.213144",
+  "dry_run": true,
+  "misclassified_count": 3229,
+  "rule_based_type_b": 735,
+  "needs_judge": 2494,
+  "original_counts": {
+    "A": 1771,
+    "B": 0,
+    "C": 6689
+  },
+  "corrected_c_count": 3460,
+  "corrected_c_rate": 40.9
+}

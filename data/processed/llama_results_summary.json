@@ -1,0 +1,87 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "timestamp": "20260331_041921",
+  "n_layers": 32,
+  "hidden_dim": 4096,
+  "cot_accuracy": {
+    "gsm8k": {
+      "total": 879,
+      "correct": 486,
+      "accuracy": 55.3
+    },
+    "mmlu": {
+      "total": 5000,
+      "correct": 2042,
+      "accuracy": 40.8
+    },
+    "bbh": {
+      "total": 5511,
+      "correct": 2210,
+      "accuracy": 40.1
+    }
+  },
+  "classification": {
+    "TYPE_B": 1578,
+    "NEEDS_JUDGE": 338,
+    "TYPE_A": 1187,
+    "TYPE_C": 1522,
+    "UNCLEAR": 3540
+  },
+  "best_probes": [
+    {
+      "task": "3-class (A/B/C)",
+      "probe": "linear",
+      "best_layer": 21,
+      "accuracy": 0.603,
+      "accuracy_std": 0.0077,
+      "f1_macro": 0.6057,
+      "n": 4287
+    },
+    {
+      "task": "3-class (A/B/C)",
+      "probe": "mlp",
+      "best_layer": 14,
+      "accuracy": 0.5927,
+      "accuracy_std": 0.0164,
+      "f1_macro": 0.5948,
+      "n": 4287
+    },
+    {
+      "task": "Binary bypass (A vs non-A)",
+      "probe": "linear",
+      "best_layer": 13,
+      "accuracy": 0.7772,
+      "accuracy_std": 0.0126,
+      "f1_macro": 0.7444,
+      "n": 4287
+    },
+    {
+      "task": "Binary bypass (A vs non-A)",
+      "probe": "mlp",
+      "best_layer": 16,
+      "accuracy": 0.8092,
+      "accuracy_std": 0.0055,
+      "f1_macro": 0.7504,
+      "n": 4287
+    },
+    {
+      "task": "Binary faithful (C vs non-C)",
+      "probe": "linear",
+      "best_layer": 19,
+      "accuracy": 0.672,
+      "accuracy_std": 0.0214,
+      "f1_macro": 0.6605,
+      "n": 4287
+    },
+    {
+      "task": "Binary faithful (C vs non-C)",
+      "probe": "mlp",
+      "best_layer": 7,
+      "accuracy": 0.697,
+      "accuracy_std": 0.0091,
+      "f1_macro": 0.6522,
+      "n": 4287
+    }
+  ],
+  "total_runtime_s": 6311.924622058868
+}

@@ -1,0 +1,171 @@
+{
+  "dataset_level": {
+    "gsm8k": {
+      "n": 2189,
+      "c_count": 85,
+      "c_rate": 3.9,
+      "ci_lo": 3.2,
+      "ci_hi": 4.8
+    },
+    "mmlu": {
+      "n": 10589,
+      "c_count": 2357,
+      "c_rate": 22.3,
+      "ci_lo": 21.5,
+      "ci_hi": 23.1
+    },
+    "bbh": {
+      "n": 8460,
+      "c_count": 3460,
+      "c_rate": 40.9,
+      "ci_lo": 39.9,
+      "ci_hi": 41.9
+    }
+  },
+  "mmlu_subjects": {
+    "high_school_psychology": {
+      "n": 321,
+      "c_rate": 7.5
+    },
+    "high_school_government_and_politics": {
+      "n": 543,
+      "c_rate": 8.8
+    },
+    "high_school_geography": {
+      "n": 519,
+      "c_rate": 9.8
+    },
+    "high_school_european_history": {
+      "n": 402,
+      "c_rate": 12.9
+    },
+    "high_school_biology": {
+      "n": 840,
+      "c_rate": 13.9
+    },
+    "college_biology": {
+      "n": 378,
+      "c_rate": 14.8
+    },
+    "high_school_computer_science": {
+      "n": 240,
+      "c_rate": 16.7
+    },
+    "computer_security": {
+      "n": 234,
+      "c_rate": 17.5
+    },
+    "clinical_knowledge": {
+      "n": 603,
+      "c_rate": 18.4
+    },
+    "elementary_mathematics": {
+      "n": 732,
+      "c_rate": 21.2
+    },
+    "college_medicine": {
+      "n": 378,
+      "c_rate": 21.4
+    },
+    "astronomy": {
+      "n": 357,
+      "c_rate": 22.1
+    },
+    "business_ethics": {
+      "n": 198,
+      "c_rate": 22.2
+    },
+    "high_school_microeconomics": {
+      "n": 582,
+      "c_rate": 22.7
+    },
+    "high_school_macroeconomics": {
+      "n": 942,
+      "c_rate": 23.4
+    },
+    "anatomy": {
+      "n": 288,
+      "c_rate": 25.0
+    },
+    "college_chemistry": {
+      "n": 156,
+      "c_rate": 25.6
+    },
+    "electrical_engineering": {
+      "n": 264,
+      "c_rate": 25.8
+    },
+    "conceptual_physics": {
+      "n": 492,
+      "c_rate": 27.0
+    },
+    "high_school_chemistry": {
+      "n": 438,
+      "c_rate": 30.6
+    },
+    "econometrics": {
+      "n": 200,
+      "c_rate": 34.0
+    },
+    "high_school_mathematics": {
+      "n": 390,
+      "c_rate": 34.6
+    },
+    "high_school_physics": {
+      "n": 267,
+      "c_rate": 35.2
+    },
+    "college_physics": {
+      "n": 204,
+      "c_rate": 39.2
+    },
+    "formal_logic": {
+      "n": 189,
+      "c_rate": 40.7
+    },
+    "college_computer_science": {
+      "n": 183,
+      "c_rate": 42.1
+    },
+    "abstract_algebra": {
+      "n": 105,
+      "c_rate": 49.5
+    },
+    "college_mathematics": {
+      "n": 90,
+      "c_rate": 52.2
+    },
+    "global_facts": {
+      "n": 54,
+      "c_rate": 53.7
+    }
+  },
+  "mmlu_range": {
+    "min": 7.5,
+    "max": 53.7,
+    "ratio": 7.2
+  },
+  "position_effect": {
+    "early": {
+      "n": 7047,
+      "c_rate": 33.5,
+      "ci_lo": 32.4,
+      "ci_hi": 34.6
+    },
+    "middle": {
+      "n": 7095,
+      "c_rate": 27.4,
+      "ci_lo": 26.4,
+      "ci_hi": 28.4
+    },
+    "late": {
+      "n": 7096,
+      "c_rate": 22.5,
+      "ci_lo": 21.5,
+      "ci_hi": 23.5
+    },
+    "early_vs_late_z": 14.57,
+    "early_vs_late_p": 4.32e-48
+  },
+  "llama_dataset_level": {}
+}

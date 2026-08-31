@@ -1,0 +1,202 @@
+{
+  "coverage_annotator1": {
+    "labeled": 500,
+    "total": 500,
+    "dist": {
+      "A": 395,
+      "C": 61,
+      "B": 42,
+      "U": 2
+    }
+  },
+  "coverage_annotator2": {
+    "labeled": 500,
+    "total": 500,
+    "dist": {
+      "A": 392,
+      "C": 61,
+      "B": 44,
+      "U": 3
+    }
+  },
+  "kappa": {
+    "four_class": 0.927443210358877,
+    "n_four": 500,
+    "three_class": 0.9314419716755562,
+    "n_three": 497,
+    "binary_c": 1.0,
+    "n_binary": 500,
+    "raw_agree_four": 0.974
+  },
+  "kappa_by_source": {
+    "gsm8k": {
+      "kappa": 1.0,
+      "n": 148,
+      "raw_agree": 1.0
+    },
+    "mmlu": {
+      "kappa": 0.8574984000568869,
+      "n": 167,
+      "raw_agree": 0.9281437125748503
+    },
+    "bbh": {
+      "kappa": 0.9828066914498143,
+      "n": 185,
+      "raw_agree": 0.9945945945945946
+    }
+  },
+  "confusion_a1_a2": {
+    "A|A": 387,
+    "C|C": 61,
+    "B|A": 5,
+    "B|B": 37,
+    "U|U": 2,
+    "A|U": 1,
+    "A|B": 7
+  },
+  "consensus": {
+    "agreed": 487,
+    "adjudicated": 12,
+    "unresolved": 1
+  },
+  "consensus_vs_final": {
+    "agree": 379,
+    "n": 499
+  },
+  "consensus_vs_judge": {
+    "agree": 173,
+    "n": 235
+  },
+  "annotator1_vs_final": {
+    "agree": 374,
+    "n": 500
+  },
+  "annotator2_vs_final": {
+    "agree": 372,
+    "n": 500
+  },
+  "by_source": {
+    "gsm8k": {
+      "agree": 146,
+      "n": 148
+    },
+    "mmlu": {
+      "agree": 119,
+      "n": 166
+    },
+    "bbh": {
+      "agree": 114,
+      "n": 185
+    }
+  },
+  "by_stratum": {
+    "BBH_agree": {
+      "agree": 9,
+      "n": 25
+    },
+    "BBH_majority31": {
+      "agree": 26,
+      "n": 40
+    },
+    "BBH_split22": {
+      "agree": 40,
+      "n": 60
+    },
+    "BBH_type_c": {
+      "agree": 21,
+      "n": 35
+    },
+    "GSM_agree": {
+      "agree": 25,
+      "n": 25
+    },
+    "GSM_majority31": {
+      "agree": 38,
+      "n": 40
+    },
+    "GSM_split22": {
+      "agree": 60,
+      "n": 60
+    },
+    "GSM_type_c": {
+      "agree": 15,
+      "n": 15
+    },
+    "MMLU_agree": {
+      "agree": 15,
+      "n": 25
+    },
+    "MMLU_majority31": {
+      "agree": 29,
+      "n": 40
+    },
+    "MMLU_split22": {
+      "agree": 41,
+      "n": 60
+    },
+    "MMLU_type_c": {
+      "agree": 14,
+      "n": 14
+    },
+    "RANDOM_baseline": {
+      "agree": 46,
+      "n": 60
+    }
+  },
+  "by_variant_tier": {
+    "agree": {
+      "agree": 53,
+      "n": 81
+    },
+    "majority_3_1": {
+      "agree": 113,
+      "n": 144
+    },
+    "not_covered": {
+      "agree": 60,
+      "n": 80
+    },
+    "split_2_2": {
+      "agree": 153,
+      "n": 194
+    }
+  },
+  "calibration": {
+    "BBH_agree": {
+      "agree": 9,
+      "n": 25
+    },
+    "BBH_type_c": {
+      "agree": 21,
+      "n": 35
+    },
+    "GSM_agree": {
+      "agree": 25,
+      "n": 25
+    },
+    "GSM_type_c": {
+      "agree": 15,
+      "n": 15
+    },
+    "MMLU_agree": {
+      "agree": 15,
+      "n": 25
+    },
+    "MMLU_type_c": {
+      "agree": 14,
+      "n": 14
+    }
+  },
+  "confidence": {
+    "annotator1": {
+      "high": 478,
+      "low": 9,
+      "medium": 13
+    },
+    "annotator2": {
+      "high": 398,
+      "medium": 90,
+      "low": 12
+    }
+  }
+}
