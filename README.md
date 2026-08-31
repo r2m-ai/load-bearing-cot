@@ -36,7 +36,7 @@ The directory layout is identical to the repository the experiments were run in,
 **Software.** Python 3.10+, CUDA 12.x.
 
 ```bash
-git clone https://github.com/renee-jia/load-bearing-cot.git
+git clone https://github.com/r2m-ai/load-bearing-cot.git
 cd load-bearing-cot
 pip install -r requirements.txt
 ```
