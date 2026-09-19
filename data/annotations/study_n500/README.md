@@ -21,9 +21,9 @@ the reference answer, and the parser's `extracted_answer`; the stratum, the
 rule label, and the judge labels were hidden. The two files contain the same
 500 rows in different orders and were labeled independently.
 
-The annotators' returned files are not included here; `results_n500.json`
-holds the aggregate numbers reported in the paper. Given returned files, run
-from the repository root:
+The annotators' returned files are not released; `results_n500.json` holds the
+aggregate numbers reported in the paper. Given returned files, run from the
+repository root:
 
 ```bash
 python data/annotations/study_n500/analysis/analyze_when_done_n500.py \

@@ -29,4 +29,4 @@ The README figures are separate and live in [`docs/assets/`](../docs/assets/).
 | `table_llama_probes.csv` | Llama probe transfer | [`experiments/models/llama.py`](../experiments/models/llama.py) |
 | `table7_intervention.csv` | Single-direction steering dose–response | [`experiments/steering/single_direction.py`](../experiments/steering/single_direction.py) |
 
-Most producing scripts need the regenerated `data/processed/` records, which are too large to ship; see the [reproduction guide](../docs/paper-reproduction.md#reproduction-boundaries). Some scripts also emit additional development figures that are not part of the release.
+Most producing scripts need the `data/processed/` records, which Git ignores; regenerate them, or take the paper's own rows from the [Hugging Face dataset](https://huggingface.co/datasets/ReneeJia/cot-load-bearingness). See the [reproduction guide](../docs/paper-reproduction.md#reproduction-boundaries). Some scripts also emit additional development figures that are not part of the release.
