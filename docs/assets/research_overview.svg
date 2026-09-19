@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="682" viewBox="0 0 1080 682" role="img" aria-labelledby="title desc">
+<title id="title">Continuation-based causal testing: study overview</title>
+<desc id="desc">A three-step protocol: generate a correct multi-step chain of thought, edit one intermediate step and truncate the trace, then force the model to continue from the corrupted prefix. Each continuation falls into one of three outcomes: silent bypass (45.3%), self-correction (26.9%) or error propagation (27.8%), measured on 21,238 Gemma-2-9B-IT continuations under the production judge. The paper then studies difficulty and perturbation controls, label validation, and hidden-state probes and steering.</desc>
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+    <path d="M 1.5 1.5 L 8 5 L 1.5 8.5" fill="none" stroke="#93a2b1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<style>
+  text{font-family:Arial,Helvetica,sans-serif;fill:#1f2c38}
+  .eyebrow{font-size:13px;font-weight:700;letter-spacing:1.6px;fill:#7a8896}
+  .title{font-size:21px;font-weight:600}
+  .h{font-size:19px;font-weight:600}
+  .h3{font-size:18px;font-weight:600}
+  .tag{font-size:13px;font-weight:700;fill:#9aa9b7;letter-spacing:.6px}
+  .body{font-size:15px;fill:#52616e}
+  .desc{font-size:14px;fill:#52616e}
+  .stat{font-size:14px;font-weight:700}
+  .small{font-size:13px;fill:#7a8896}
+  .badge{font-size:17px;font-weight:700;fill:#fff}
+  .card{fill:#f6f9fb;stroke:#dde4ea}
+  .plain{fill:#fff;stroke:#e3e9ee}
+  .flow{fill:none;stroke:#93a2b1;stroke-width:1.5;marker-end:url(#arrow)}
+  .rail{fill:none;stroke:#c3ccd5;stroke-width:1.5;stroke-linejoin:round}
+  .rule{stroke:#dde4ea;stroke-width:1}
+</style>
+
+<rect width="1080" height="682" rx="14" fill="#fff"/>
+
+<text x="32" y="44" class="eyebrow">CONTINUATION-BASED CAUSAL TESTING</text>
+<text x="32" y="76" class="title">Does the written reasoning constrain the answer?</text>
+
+<!-- Protocol -->
+<rect x="32" y="100" width="320" height="118" rx="10" class="card"/>
+<text x="52" y="131" class="tag">01</text>
+<text x="78" y="131" class="h">Correct baseline</text>
+<text x="52" y="163" class="body">Generate a multi-step CoT.</text>
+<text x="52" y="185" class="body">Keep only correct answers.</text>
+
+<path d="M 358 159 H 374" class="flow"/>
+
+<rect x="380" y="100" width="320" height="118" rx="10" class="card"/>
+<text x="400" y="131" class="tag">02</text>
+<text x="426" y="131" class="h">Perturb &amp; truncate</text>
+<text x="400" y="163" class="body">Edit one intermediate step.</text>
+<text x="400" y="185" class="body">Cut the rest of the trace.</text>
+
+<path d="M 706 159 H 722" class="flow"/>
+
+<rect x="728" y="100" width="320" height="118" rx="10" class="card"/>
+<text x="748" y="131" class="tag">03</text>
+<text x="774" y="131" class="h">Continue</text>
+<text x="748" y="163" class="body">Resume from the edited prefix</text>
+<text x="748" y="185" class="body">in the same assistant turn.</text>
+
+<!-- Fan out to the three outcomes -->
+<text x="32" y="262" class="eyebrow">THREE BEHAVIORAL OUTCOMES</text>
+<text x="302" y="262" class="small">Gemma-2-9B-IT · n = 21,238 · production judge</text>
+<path d="M 888 218 V 282 M 192 282 H 888" class="rail"/>
+<path d="M 192 284 V 294" class="flow"/>
+<path d="M 540 284 V 294" class="flow"/>
+<path d="M 888 284 V 294" class="flow"/>
+
+<rect x="32" y="298" width="320" height="156" rx="10" fill="#fdf6e9" stroke="#e0c187"/>
+<circle cx="68" cy="334" r="16" fill="#9a6f26"/>
+<text x="68" y="340" text-anchor="middle" class="badge">A</text>
+<text x="100" y="340" class="h">Silent bypass</text>
+<text x="52" y="374" class="desc">Continues past the injected error</text>
+<text x="52" y="395" class="desc">and still reaches the right answer.</text>
+<line x1="52" y1="412" x2="332" y2="412" class="rule"/>
+<text x="52" y="433" class="stat" fill="#7a5615">Correct answer · 45.3%</text>
+
+<rect x="380" y="298" width="320" height="156" rx="10" fill="#eaf6f2" stroke="#7fbcaf"/>
+<circle cx="416" cy="334" r="16" fill="#24796c"/>
+<text x="416" y="340" text-anchor="middle" class="badge">B</text>
+<text x="448" y="340" class="h">Self-correction</text>
+<text x="400" y="374" class="desc">Flags the inconsistency mid-chain,</text>
+<text x="400" y="395" class="desc">repairs it, then answers correctly.</text>
+<line x1="400" y1="412" x2="680" y2="412" class="rule"/>
+<text x="400" y="433" class="stat" fill="#1c6055">Correct answer · 26.9%</text>
+
+<rect x="728" y="298" width="320" height="156" rx="10" fill="#fcf0f1" stroke="#dc9296"/>
+<circle cx="764" cy="334" r="16" fill="#a94d56"/>
+<text x="764" y="340" text-anchor="middle" class="badge">C</text>
+<text x="796" y="340" class="h">Error propagation</text>
+<text x="748" y="374" class="desc">Takes up the corrupted step and</text>
+<text x="748" y="395" class="desc">carries it into the final answer.</text>
+<line x1="748" y1="412" x2="1028" y2="412" class="rule"/>
+<text x="748" y="433" class="stat" fill="#8c3c45">Incorrect answer · 27.8%</text>
+
+<!-- Analyses -->
+<text x="32" y="498" class="eyebrow">ANALYSES IN THE PAPER</text>
+
+<rect x="32" y="514" width="320" height="110" rx="10" class="plain"/>
+<text x="52" y="546" class="h3">Difficulty &amp; controls</text>
+<text x="52" y="576" class="small">Within-task and cross-model contrasts</text>
+<text x="52" y="598" class="small">Perturbation type, strength, position</text>
+
+<rect x="380" y="514" width="320" height="110" rx="10" class="plain"/>
+<text x="400" y="546" class="h3">Label validation</text>
+<text x="400" y="576" class="small">Judge-prompt sensitivity</text>
+<text x="400" y="598" class="small">Blinded human annotation</text>
+
+<rect x="728" y="514" width="320" height="110" rx="10" class="plain"/>
+<text x="748" y="546" class="h3">Representation &amp; control</text>
+<text x="748" y="576" class="small">Hidden-state probes, 42 layers</text>
+<text x="748" y="598" class="small">Single- and multi-direction steering</text>
+
+<text x="32" y="656" class="small">Scope: whether the answer depends on the written CoT — not whether the CoT mirrors the model's internal computation.</text>
+</svg>

@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this protocol or code, please cite the accompanying paper."
+type: software
+title: "CoT Load-Bearingness Benchmark"
+authors:
+  - family-names: Jia
+    given-names: Renee
+  - family-names: Mu
+    given-names: Di
+repository-code: "https://github.com/r2m-ai/load-bearing-cot"
+url: "https://openreview.net/forum?id=TiZQnKDIHq"
+license: MIT
+preferred-citation:
+  type: article
+  title: "From Decorative to Load-Bearing: Task Difficulty Shapes the Causal Role of Chain-of-Thought"
+  authors:
+    - family-names: Jia
+      given-names: Renee
+    - family-names: Mu
+      given-names: Di
+  journal: "Transactions on Machine Learning Research"
+  year: 2026
+  url: "https://openreview.net/forum?id=TiZQnKDIHq"

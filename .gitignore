@@ -1,4 +1,4 @@
-# Regenerated data (see README "Data")
+# Regenerated data (see docs/paper-reproduction.md)
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*
@@ -9,10 +9,10 @@ data/processed/*
 *.npy
 *.pt
 *.pkl
-revision/revision_exp_results/**/step*.json
-revision/revision_exp_results/**/hidden_states/
-revision/revision_exp_results/**/logs/
-revision/revision_exp_results/**/*.log
+results/**/step*.json
+results/**/hidden_states/
+results/**/logs/
+results/**/*.log
 
 # Runtime
 logs/
@@ -34,3 +34,11 @@ paper/*.blg
 paper/*.fls
 paper/*.fdb_latexmk
 paper/*.synctex.gz
+
+# Benchmark runs and local environments
+runs/
+.venv/
+.venv-*/
+.pytest_cache/
+.env.*
+!.env.example
