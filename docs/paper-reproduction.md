@@ -1,6 +1,6 @@
 # Reproducing the paper experiments
 
-[Benchmark home](../README.md) · [New evaluation protocol](protocol.md) · [Paper PDF](https://openreview.net/pdf?id=TiZQnKDIHq)
+[Repository home](../README.md) · [Protocol spec](protocol.md) · [Paper](https://openreview.net/forum?id=TiZQnKDIHq) · [PDF](https://openreview.net/pdf?id=TiZQnKDIHq)
 
 This guide documents the historical experiment scripts and released artifacts. Run commands from the repository root. These scripts use fixed model choices and historical defaults; the new `evaluate.py` is a separate, reusable entry point.
 
@@ -121,7 +121,7 @@ Included in this repository (small):
 - `results/**` — JSON/CSV summaries of the revision experiments, including the per-row four-variant judge labels.
 - Both human-annotation studies: instructions, blinded labeling files, hidden metadata, scripts, and aggregate results. The annotators' returned label files are not released.
 
-Not in this repository, because Git ignores the pipeline's generated output: the ~21k labeled continuations (`data/processed/expanded_pairs.json`, ~100 MB), the matched controls, the steering generations and the per-model raw CoT files. Rather than regenerate them, take the exact rows the paper used from the [Hugging Face dataset](https://huggingface.co/datasets/ReneeJia/cot-load-bearingness), which ships all of them as parquet. Hidden-state feature arrays and probe checkpoints are released nowhere and must be regenerated; contact the authors if you need the originals.
+Not in this repository, because Git ignores the pipeline's generated output: the ~21k labeled continuations (`data/processed/expanded_pairs.json`, ~100 MB), the matched controls, the steering generations and the per-model raw CoT files. Rather than regenerate them, take the exact rows the paper used from the [Hugging Face dataset](https://huggingface.co/datasets/ReneeJia/cot-load-bearingness), which ships all of them as parquet; [`scripts/build_hf_dataset.py`](../scripts/build_hf_dataset.py) documents exactly which file each released column was read from. Hidden-state feature arrays and probe checkpoints are released nowhere and must be regenerated; contact the authors if you need the originals.
 
 ---
 

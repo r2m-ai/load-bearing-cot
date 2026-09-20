@@ -1,6 +1,6 @@
 # Paper experiment map
 
-[Paper](../paper/main.pdf) · [Repository home](../README.md) · [Reproduction commands](../docs/paper-reproduction.md)
+[Paper](https://openreview.net/forum?id=TiZQnKDIHq) · [PDF](../paper/main.pdf) · [Repository home](../README.md) · [Reproduction commands](../docs/paper-reproduction.md)
 
 The experiments are organized around the paper's argument. Start with the intervention protocol, establish the behavioral gradient and its controls, validate the labels, then examine generalization, representation and control. The reusable `evaluate.py` is a separate, simplified protocol; these scripts retain the paper's experimental logic.
 

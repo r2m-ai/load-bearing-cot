@@ -2,7 +2,7 @@
 
 The benchmark is organized around a question: when does changing a written reasoning step change what a model answers?
 
-Useful contributions include new model adapters, dataset/answer adapters, parser regression cases, and complete reproducible runs. Start with the [protocol](docs/protocol.md). Keep new benchmark code in `load_bearing/`; place paper experiments under the relevant research theme in `experiments/` and summaries under the corresponding theme in `results/`. Update the experiment map and any dependent paths when moving code.
+Useful contributions include new model adapters, dataset/answer adapters, parser regression cases, and complete reproducible runs. Start with the [protocol](docs/protocol.md). Keep new benchmark code in `load_bearing/`; place paper experiments under the relevant research theme in `experiments/`, summaries under the corresponding theme in `results/`, and packaging or release utilities in `scripts/`. Update the experiment map and any dependent paths when moving code.
 
 For a model result, include the model and dataset revisions, protocol version, full arguments, hardware/software environment, eligibility and parsing counts, and the generated manifest and summary. Inspect example interventions before interpreting a score. Distinguish paper results, reproduced results, and newly measured results. Do not add leaderboard numbers from a smoke test or a run with unresolved parsing failures.
 

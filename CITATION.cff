@@ -1,23 +1,43 @@
 cff-version: 1.2.0
-message: "If you use this protocol or code, please cite the accompanying paper."
+message: "If you use this protocol, code or data, please cite the accompanying paper."
 type: software
-title: "CoT Load-Bearingness Benchmark"
+title: "Continuation-Based Causal Testing of Chain-of-Thought (load-bearing-cot)"
+abstract: >-
+  Reference implementation and release artifacts for continuation-based causal
+  testing: an ablation-patch intervention that perturbs one reasoning step,
+  truncates the chain, and forces the model to continue, measuring how tightly
+  a written chain-of-thought constrains the answer it precedes.
+version: "load-bearing-v0.1"
+date-released: 2026-09-19
 authors:
   - family-names: Jia
     given-names: Renee
+    email: reneejia@r2m.ai
+    affiliation: R2M AI
   - family-names: Mu
     given-names: Di
+    affiliation: R2M AI
 repository-code: "https://github.com/r2m-ai/load-bearing-cot"
 url: "https://openreview.net/forum?id=TiZQnKDIHq"
 license: MIT
+keywords:
+  - chain-of-thought
+  - faithfulness
+  - interpretability
+  - causal intervention
+  - large language models
 preferred-citation:
   type: article
   title: "From Decorative to Load-Bearing: Task Difficulty Shapes the Causal Role of Chain-of-Thought"
   authors:
     - family-names: Jia
       given-names: Renee
+      email: reneejia@r2m.ai
+      affiliation: R2M AI
     - family-names: Mu
       given-names: Di
+      affiliation: R2M AI
   journal: "Transactions on Machine Learning Research"
+  issn: "2835-8856"
   year: 2026
   url: "https://openreview.net/forum?id=TiZQnKDIHq"
