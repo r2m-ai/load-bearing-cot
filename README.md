@@ -189,7 +189,6 @@ Unparseable answers stay unscored and undefined rates are `null`. Output directo
 | [`data/`](data/) | Example records, reference artifacts and human-annotation materials |
 | [`paper/`](paper/) · [`figures/`](figures/) | Manuscript source and PDF, paper figures and table CSVs · [map](figures/README.md) |
 | [`docs/`](docs/) | [Protocol spec](docs/protocol.md) and [reproduction guide](docs/paper-reproduction.md) |
-| [`scripts/`](scripts/) | Release tooling — assembling the published dataset from the paper's records |
 | [`tests/`](tests/) | Offline regression tests — `python -m unittest discover -s tests` |
 
 ### Artifacts

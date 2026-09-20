@@ -14,6 +14,9 @@ results/**/hidden_states/
 results/**/logs/
 results/**/*.log
 
+# Release tooling (not published)
+scripts/
+
 # Runtime
 logs/
 __pycache__/
