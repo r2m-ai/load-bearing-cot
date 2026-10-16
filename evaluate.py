@@ -11,7 +11,7 @@ import subprocess
 
 from load_bearing import PROTOCOL_VERSION
 from load_bearing.backend import MODEL_ALIASES, VLLMBackend
-from load_bearing.datasets import format_prompt, load_examples
+from load_bearing.datasets import DATASETS, format_prompt, load_examples
 from load_bearing.protocol import correct, extract_answer, interventions, summarize
 
 
@@ -67,7 +67,7 @@ def positive(value):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", required=True, help="Model alias, Hugging Face ID, or local model path")
-    parser.add_argument("--dataset", required=True, choices=["gsm8k", "mmlu", "bbh"])
+    parser.add_argument("--dataset", required=True, choices=list(DATASETS))
     parser.add_argument("--max-examples", type=positive, default=100, help="Sampled questions, not correct baselines (default: 100)")
     parser.add_argument("--all", action="store_true", help="Use all dataset rows")
     parser.add_argument("--task", help="Single BBH task (default: all available BBH tasks)")
@@ -85,7 +85,7 @@ def main():
         parser.error("--task applies only to BBH")
     if not 0 < args.gpu_memory_utilization <= 1:
         parser.error("--gpu-memory-utilization must be in (0, 1]")
-    args.strategy = args.strategy or ("arithmetic" if args.dataset == "gsm8k" else "contradiction")
+    args.strategy = args.strategy or DATASETS[args.dataset].default_strategy
     output = args.output_dir or Path("runs") / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     if output.exists():
         parser.error(f"--output-dir already exists: {output}; choose a new directory")

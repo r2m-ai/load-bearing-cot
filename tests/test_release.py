@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 import evaluate
-from load_bearing.datasets import load_examples
+from load_bearing.datasets import DATASETS, adapter, load_examples
 from load_bearing.protocol import correct, extract_answer, interventions, perturb
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +51,31 @@ class RegressionTests(unittest.TestCase):
                 path.write_text(json.dumps(row) + '\n')
                 with self.subTest(dataset=dataset, row=row), self.assertRaises(ValueError):
                     load_examples(dataset, 1, 42, input_file=path)
+
+
+class RegistryTests(unittest.TestCase):
+    def test_every_dataset_row_is_complete(self):
+        for name, dataset in DATASETS.items():
+            with self.subTest(dataset=name):
+                for field in ('source', 'split', 'answer_type', 'default_strategy'):
+                    self.assertTrue(getattr(dataset, field), field)
+                for field in ('convert', 'validate', 'question', 'extract', 'correct'):
+                    self.assertTrue(callable(getattr(dataset, field)), field)
+                self.assertIn(dataset.default_strategy, ('arithmetic', 'contradiction'))
+                self.assertTrue(dataset.configs is None or len(dataset.configs) > 0)
+
+    def test_unknown_dataset_raises(self):
+        with self.assertRaisesRegex(ValueError, 'Unknown dataset'):
+            adapter('tsp')
+        with self.assertRaisesRegex(ValueError, 'Unknown dataset'):
+            extract_answer('Answer: 1', 'tsp')
+        with self.assertRaisesRegex(ValueError, 'Unknown dataset'):
+            load_examples('tsp', 1, 42, input_file='unused.jsonl')
+
+    def test_cli_choices_come_from_the_registry(self):
+        parser_source = (ROOT / 'evaluate.py').read_text()
+        self.assertIn('choices=list(DATASETS)', parser_source)
+        self.assertNotIn('"arithmetic" if args.dataset == "gsm8k"', parser_source)
 
 
 class LayoutTests(unittest.TestCase):

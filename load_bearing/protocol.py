@@ -20,8 +20,39 @@ def normalize_text_answer(answer):
     return option[1] if option else answer
 
 
+# Answer contracts. Each dataset row in load_bearing.datasets.DATASETS names
+# one extract function and one correct function from this group.
+
+def extract_number(answer):
+    answer = answer.rstrip(".").lstrip("$").replace(",", "")
+    if not re.fullmatch(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)", answer):
+        return None
+    return str(Decimal(answer))
+
+
+def extract_choice(answer):
+    match = re.fullmatch(r"\(?([A-Da-d])\)?\.?", answer)
+    return match[1].upper() if match else None
+
+
+def extract_text(answer):
+    return normalize_text_answer(answer) or None
+
+
+def correct_number(answer, reference):
+    try:
+        return Decimal(answer) == Decimal(str(reference).replace(",", ""))
+    except InvalidOperation:
+        return False
+
+
+def correct_text(answer, reference):
+    return normalize_text_answer(answer) == normalize_text_answer(reference)
+
+
 def extract_answer(text, dataset):
     # Score the final explicit answer, not numbers mentioned in the reasoning.
+    from .datasets import adapter  # the registry imports this module's contracts
     if "<think>" in text and "</think>" not in text:
         return None
     text = text.rsplit("</think>", 1)[-1]
@@ -29,26 +60,14 @@ def extract_answer(text, dataset):
     if not matches:
         return None
     answer = matches[-1].strip().strip("*").strip()
-    if dataset == "gsm8k":
-        answer = answer.rstrip(".").lstrip("$").replace(",", "")
-        if not re.fullmatch(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)", answer):
-            return None
-        return str(Decimal(answer))
-    if dataset == "mmlu":
-        match = re.fullmatch(r"\(?([A-Da-d])\)?\.?", answer)
-        return match[1].upper() if match else None
-    return normalize_text_answer(answer) or None
+    return adapter(dataset).extract(answer)
 
 
 def correct(answer, reference, dataset):
+    from .datasets import adapter
     if answer is None:
         return None
-    if dataset == "gsm8k":
-        try:
-            return Decimal(answer) == Decimal(str(reference).replace(",", ""))
-        except InvalidOperation:
-            return False
-    return normalize_text_answer(answer) == normalize_text_answer(reference)
+    return adapter(dataset).correct(answer, reference)
 
 
 def step_spans(response):

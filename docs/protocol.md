@@ -77,7 +77,7 @@ python evaluate.py --model gemma-2-9b-it --dataset gsm8k \
 
 `--dataset` selects the answer contract for local files. MMLU-format rows additionally require four `choices` and a letter `reference_answer`; BBH-format rows use a textual reference and may include `task`. Local rows are not filtered by reference-solution markers. Keep dataset provenance with the file when sharing results.
 
-For a new answer type, add a dataset adapter, parser fixtures and intervention checks before claiming support. Agent trajectories require a separate intervention unit, task-success measure and continuation backend; they are outside v0.1.
+For a new answer type, add one row to `DATASETS` in `load_bearing/datasets.py` (source, conversion, validation, prompt wording, answer contract and default strategy live on that row; `--dataset` choices come from it), then add parser fixtures and intervention checks before claiming support. Agent trajectories require a separate intervention unit, task-success measure and continuation backend; they are outside v0.1.
 
 ## Difference from the published experiments
 
