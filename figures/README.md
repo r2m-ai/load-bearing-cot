@@ -22,12 +22,12 @@ The README figures are separate and live in [`docs/assets/`](../docs/assets/).
 
 | File | Contents | Produced by |
 |---|---|---|
-| `table4_behavioral.csv` | A/B/C counts by position, strategy and dataset | [`experiments/behavior/analyze_behaviors.py`](../experiments/behavior/analyze_behaviors.py) |
+| `behavioral_taxonomy.csv` | A/B/C counts by position, strategy and dataset | [`experiments/behavior/analyze_behaviors.py`](../experiments/behavior/analyze_behaviors.py) |
 | `probe_with_ci.csv` | Probe accuracy with CIs at the selected layers | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
 | `probe_layer_sweep.csv` | Full 42-layer probe sweep on judge labels | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
-| `table_auroc.csv` | AUROC at the best layer per probe task | [`experiments/probes/compute_auroc.py`](../experiments/probes/compute_auroc.py) |
-| `table_llama_probes.csv` | Llama probe transfer | [`experiments/models/llama.py`](../experiments/models/llama.py) |
-| `table7_intervention.csv` | Single-direction steering dose–response | [`experiments/steering/single_direction.py`](../experiments/steering/single_direction.py) |
+| `probe_auroc.csv` | AUROC at the best layer per probe task | [`experiments/probes/compute_auroc.py`](../experiments/probes/compute_auroc.py) |
+| `llama_probe_transfer.csv` | Llama probe transfer | [`experiments/models/llama.py`](../experiments/models/llama.py) |
+| `steering_dose_response.csv` | Single-direction steering dose–response | [`experiments/steering/single_direction.py`](../experiments/steering/single_direction.py) |
 
 ### Probe CSVs: label set and fit
 

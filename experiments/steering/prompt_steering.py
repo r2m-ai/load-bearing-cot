@@ -1,10 +1,10 @@
 """
-Script 13: Prompt-stage activation steering.
+Prompt-stage activation steering.
 
 Tests whether the faithfulness decision can be overridden by steering
 during PROMPT ENCODING (before any CoT generation begins).
 
-Key difference from script 12: the steering hook acts on tokens
+Key difference from steering/single_direction.py: the steering hook acts on tokens
 [0:prompt_length] (the question/prompt tokens) rather than
 [prompt_length:] (the CoT tokens). During autoregressive generation
 steps (seq_len=1), the hook does NOT steer, since those tokens are
@@ -46,7 +46,7 @@ logging.basicConfig(
 MODEL_ID = "google/gemma-2-9b-it"
 
 
-# ---- Answer extraction (same as script 12) ----
+# ---- Answer extraction (same as steering/single_direction.py) ----
 
 def extract_answer(response: str, source: str) -> str | None:
     if source == "gsm8k":
@@ -91,7 +91,7 @@ def check_correct(extracted: str | None, pair: dict) -> bool:
 class PromptSteeringHook:
     """Hook that adds a direction to hidden states during PROMPT encoding only.
 
-    Unlike BatchSteeringHook (script 12) which steers CoT tokens [prompt_length:],
+    Unlike BatchSteeringHook (steering/single_direction.py) which steers CoT tokens [prompt_length:],
     this hook steers PROMPT tokens [0:prompt_length] and does NOT steer during
     autoregressive generation (seq_len=1).
     """
@@ -484,7 +484,7 @@ def main():
         v7_df = pd.DataFrame(v7_results)
         v7_ep = v7_df[v7_df["direction"] == "error_prop"] if "direction" in v7_df.columns else v7_df
 
-        print(f"\n{'Alpha':>8}  {'Prompt Steer':>14}  {'CoT Steer (v7)':>14}  {'Delta':>8}")
+        print(f"\n{'Alpha':>8}  {'Prompt Steer':>14}  {'CoT Steer':>14}  {'Delta':>8}")
         print("-" * 50)
         for alpha in sorted(alphas):
             prompt_sub = df[df["alpha"] == alpha]

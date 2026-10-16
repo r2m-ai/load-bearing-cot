@@ -1,6 +1,6 @@
 """
-exp_2_3_extract_annot_features.py — extract Gemma-2-9B-IT hidden-state
-features for the n=200 human-annotation subset (item 2.3, GPU step).
+Extract Gemma-2-9B-IT hidden-state
+features for the n=200 human-annotation subset.
 
 Why this exists: the existing `data/processed/extracted_features_42layers.npz`
 was extracted from a separately-sampled N=2,000 probe-training set; only

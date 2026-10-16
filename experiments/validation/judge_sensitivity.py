@@ -1,10 +1,10 @@
 """
-Exp 1a-1b: Judge sensitivity analysis.
+Judge sensitivity analysis.
 Tests 5 prompt variants on existing non-Type-C continuations.
 Reports A/B/C stability, A+B vs C stability, gradient slope stability.
 
 Requires: ANTHROPIC_API_KEY env var
-Outputs: results/robustness/exp1ab_judge_sensitivity.json
+Outputs: results/validation/robustness/judge_sensitivity.json
 
 Usage: python experiments/validation/judge_sensitivity.py [--sample N] [--concurrency N]
   --sample N: judge only N examples per variant (default: all non-C examples)
@@ -34,7 +34,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp1ab_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"judge_sensitivity_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -331,7 +331,7 @@ async def main():
         "variants": all_results,
     }
 
-    outpath = RESULTS / "exp1ab_judge_sensitivity.json"
+    outpath = RESULTS / "judge_sensitivity.json"
     with open(outpath, "w") as f:
         json.dump(summary, f, indent=2)
     logging.info(f"\nResults saved to {outpath}")

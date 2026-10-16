@@ -1,5 +1,5 @@
 """
-Script 10 (v6): Fused hidden state extraction + MLP/linear probe sweep.
+Fused hidden state extraction + MLP/linear probe sweep.
 
 OPTIMIZED: Instead of saving 240GB of .pt files to disk then loading them back,
 this script:
@@ -12,7 +12,7 @@ this script:
 This reduces the pipeline from ~3.5 hrs to ~30 min total.
 
 Input: data/processed/subclassified_pairs.json (with judge labels)
-Output: figures/layer_sweep.png, mlp_gain.png, table6_probe_comparison.csv
+Output: figures/layer_sweep.png, figures/mlp_gain.png, figures/probe_layer_comparison.csv
 """
 
 import json
@@ -409,7 +409,7 @@ def main():
     print(f"Saved Figure 8")
 
     # ---- Table 6 ----
-    df.to_csv(FIGURES_DIR / "table6_probe_comparison.csv", index=False)
+    df.to_csv(FIGURES_DIR / "probe_layer_comparison.csv", index=False)
     print(f"Saved Table 6")
 
     # ---- Summary ----

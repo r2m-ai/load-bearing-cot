@@ -1,32 +1,32 @@
 """
-exp_3_2_base_gemma_crossmodel.py — base Gemma-2-9B (NOT -IT) cross-model
-validation (revision Theme 3, item 3.2).
+Base Gemma-2-9B (NOT -IT) cross-model
+validation.
 
-Reviewer DzAa #3: the difficulty→faithfulness gradient is shown only on
+Motivation: the difficulty→faithfulness gradient is shown only on
 instruction-tuned models. This script runs the full pipeline on the base
 checkpoint to isolate the instruction-tuning effect at fixed architecture
 and scale.
 
-Per researcher sign-off 2026-05-19, we use **zero-shot prompting only**.
+We use **zero-shot prompting only**.
 Base Gemma was never trained to follow chat templates or "Solution:"-style
 instructions, so we use a `Question: … Step 1:` priming prefix that nudges
 the base LM toward step-numbered generations without few-shot exemplars.
 This means the base-vs-IT contrast jointly varies (a) instruction tuning
 and (b) elicitation regime — call this the **3.5p prompting confound** and
-state it explicitly in §5.5 / §6.3: the claim is scoped to "instruction
+state it explicitly in the discussion: the claim is scoped to "instruction
 tuning + zero-shot elicitation jointly", not pure instruction-tuning.
 
 Because the base model may not produce usable CoT at all on every task
 (low base accuracy + thin step structure → no signal), we run an explicit
-**viability go/no-go gate** as the first stage (item 3.4). The gate
+**viability go/no-go gate** as the first stage. The gate
 samples ~50 questions per source and checks three conditions per source:
   (1) ≥40% of generations have ≥3 parseable steps (so perturbations exist),
   (2) ≥20% are correct (so there is a signal above floor),
   (3) ≥60% have an extractable Answer.
-If any source fails, we skip it in step 1 and state that in the §5.5
-write-up rather than reporting a pipeline that ran on noise.
+If any source fails, we skip it in step 1 and say so in the write-up
+rather than reporting a pipeline that ran on noise.
 
-Differences from script 14 (everything else is shared via import-by-path):
+Differences from models/llama.py (everything else is shared via import-by-path):
 
   1. NO chat template. `tokenizer.chat_template` is None on the base
      checkpoint; calling `apply_chat_template` would either error out or
@@ -36,15 +36,15 @@ Differences from script 14 (everything else is shared via import-by-path):
 
   2. Continuation prefix is raw concatenation:  `<raw_prompt>\\n<prefix>`.
      There are no chat-template suffix tokens to strip (the source of the
-     `<|eot_id|>` / `<|im_end|>` handling in script 14 and exp_3_1).
+     `<|eot_id|>` / `<|im_end|>` handling in models/llama.py and models/deepseek.py).
 
   3. Feature anchor stays the same: hidden state at the last token of the
      raw prefix, across all 42 layers (Gemma-2-9B has same architecture as
      Gemma-2-9B-IT, just different weights, so the layer-21 finding from
      the IT model is a natural comparison point).
 
-Caveats already wired into the response letter (DzAa §3 reply):
-  - 3.5p prompting confound (above) — must surface in §5.5/§6.3.
+Caveats stated in the paper:
+  - 3.5p prompting confound (above) — must surface in the discussion
   - 70B+ remains explicitly out of compute reach (3.3).
 
 Usage:
@@ -105,7 +105,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_3_2_base_gemma_{timestamp}.log"),
+        logging.FileHandler(LOG_DIR / f"base_gemma_{timestamp}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -121,14 +121,14 @@ COT_MAX_NEW_TOKENS = 384
 CONT_MAX_NEW_TOKENS_BASE = 256
 CONT_MAX_NEW_TOKENS_CAP = 512
 
-# Viability thresholds — fail-fast gates. Tune conservatively (item 3.4):
+# Viability thresholds — fail-fast gates. Tune conservatively:
 VIABILITY_N = 50            # samples per source for the gate
 VIABILITY_MIN_STEPS_PCT = 0.40
 VIABILITY_MIN_ACC = 0.20
 VIABILITY_MIN_EXTRACT_PCT = 0.60
 
 
-# ---- import script 14 by path (digit-prefixed; use the same canonical bits) ----
+# ---- import models/llama.py by path (digit-prefixed; use the same canonical bits) ----
 
 def _load_module(filename: str, modname: str):
     spec = importlib.util.spec_from_file_location(modname, SCRIPTS / filename)
@@ -139,7 +139,7 @@ def _load_module(filename: str, modname: str):
 
 _LL = _load_module("models/llama.py", "llama_xmodel")
 
-# Shared verbatim from script 14 (model-agnostic):
+# Shared verbatim from models/llama.py (model-agnostic):
 parse_cot_steps = _LL.parse_cot_steps
 perturb_gsm8k_step = _LL.perturb_gsm8k_step
 perturb_mmlu_step = _LL.perturb_mmlu_step
@@ -271,7 +271,7 @@ def load_model_for_generation(device="cuda", no_vllm=False):
 
     if not no_vllm:
         try:
-            # COMPAT PATCH (see exp_3_1 comment): vLLM 0.8.5 + transformers
+            # COMPAT PATCH (see models/deepseek.py comment): vLLM 0.8.5 + transformers
             # 5.x missing-attr fix + force V0 engine (no flashinfer).
             from transformers.tokenization_utils_base import PreTrainedTokenizerBase
             if not hasattr(PreTrainedTokenizerBase, "all_special_tokens_extended"):
@@ -373,7 +373,7 @@ def _generate_batched_hf(model, tokenizer, raw_prompts, max_new_tokens, batch_si
     return out_responses
 
 
-# ---- viability gate (item 3.4) ----
+# ---- viability gate ----
 
 def _sample_for_viability(source: str) -> list[dict]:
     if source == "gsm8k":
@@ -472,7 +472,7 @@ def stage_viability(args, model=None, tokenizer=None, is_vllm=False):
               f"acc={r.get('accuracy', 0)*100:5.1f}%")
     print(f"PASSED sources: {passed_sources or '(none)'}")
     if not passed_sources:
-        print("\n  -> All sources failed viability. Recommendation: state in §5.5 / §6.3 that")
+        print("\n  -> All sources failed viability. Recommendation: state in the discussion that")
         print("     base Gemma did not produce parseable ≥3-step CoT under zero-shot eliciting,")
         print("     making a cross-model comparison uninformative at this prompt regime.")
         print("     This is itself a finding (re: 3.5p prompting confound).")
@@ -816,9 +816,9 @@ def step4_extract_features(model, tokenizer, pairs, args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description=f"{MODEL_ID} base-model cross-model validation (item 3.2)")
+        description=f"{MODEL_ID} base-model cross-model validation")
     parser.add_argument("--stage", choices=["viability", "full"], default="full",
-                        help="viability: gate only (item 3.4). full: viability → "
+                        help="viability: gate only. full: viability → "
                              "step1..5; sources that fail viability are skipped.")
     parser.add_argument("--max-examples", type=int, default=None,
                         help="per-dataset cap for smoke runs")
@@ -849,7 +849,7 @@ def main():
     logging.info(f"Max examples: {args.max_examples or 'all'}")
     logging.info(f"Output dir: {MODEL_DIR}")
     logging.info("NB: zero-shot prompting only. The base-vs-IT contrast confounds "
-                 "instruction tuning with elicitation regime (3.5p) — state in §5.5.")
+                 "instruction tuning with elicitation regime (3.5p) — state in the paper")
 
     if args.stage == "viability":
         stage_viability(args)
@@ -945,7 +945,7 @@ def main():
             torch.cuda.empty_cache()
         logging.info("Freed GPU memory for probe training")
 
-    # Step 5 — reuse script 14's probe training verbatim
+    # Step 5 — reuse models/llama.py's probe training verbatim
     if not feature_data:
         logging.error("No features available -- cannot train probes")
         return

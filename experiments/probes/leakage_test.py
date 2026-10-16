@@ -1,5 +1,5 @@
 """
-Script 8 (v4): Feature leakage detection.
+Feature leakage detection.
 
 Tests whether the 99.9% probe accuracy reflects genuine mechanistic signal
 or leakage from perturbation type / strategy.
@@ -14,7 +14,7 @@ Tests:
 3. Cross-position: train on early, test on late
 4. Within-strategy: train/test within same strategy (upper bound)
 
-Output: figures/figure6_leakage_test.png, figures/table5_leakage.csv
+Output: figures/probe_leakage_test.png, figures/probe_leakage.csv
 """
 
 import json
@@ -321,13 +321,13 @@ def main():
         ax.set_ylabel("Train Strategy")
         ax.set_title("Cross-Strategy Transfer Matrix\n(high transfer = real signal, low = leakage)")
         plt.tight_layout()
-        plt.savefig(FIGURES_DIR / "figure6_leakage_test.png", dpi=300, bbox_inches="tight")
-        plt.savefig(FIGURES_DIR / "figure6_leakage_test.pdf", bbox_inches="tight")
+        plt.savefig(FIGURES_DIR / "probe_leakage_test.png", dpi=300, bbox_inches="tight")
+        plt.savefig(FIGURES_DIR / "probe_leakage_test.pdf", bbox_inches="tight")
         print(f"\nSaved Figure 6 (transfer matrix)")
 
     # Table 5
     df = pd.DataFrame(results)
-    df.to_csv(FIGURES_DIR / "table5_leakage.csv", index=False)
+    df.to_csv(FIGURES_DIR / "probe_leakage.csv", index=False)
     print(f"Saved Table 5")
 
     # ---- Summary ----

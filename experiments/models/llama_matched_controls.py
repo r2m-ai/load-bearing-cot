@@ -1,16 +1,16 @@
 """
-exp_1_5_llama_replication.py — Llama-3.1-8B-Instruct replication of the
+Llama-3.1-8B-Instruct replication of the
 two NEW perturbation arms (item C: cross-model robustness for the new
 findings).
 
 The paper's Llama-3.1-8B-Instruct pipeline (`experiments/models/llama.py`)
 applied numerical perturbations to GSM8K and text perturbations to
 MMLU/BBH — the same scope as Gemma's main pipeline. It did NOT apply:
-  - text perturbations to GSM8K (the exp_1_1 contribution)
-  - numerical perturbations to multistep_arithmetic (the exp_1_3 contribution)
+  - text perturbations to GSM8K (the controls/gsm8k_text_perturbations.py contribution)
+  - numerical perturbations to multistep_arithmetic (the controls/hard_task_numerical_perturbations.py contribution)
 
 This script fills both gaps on Llama. Doubles the cross-model evidence
-weight on the rebuttal's headline contrast (§5.1).
+weight on the paper's headline contrast.
 
 Pipeline:
   1. Load Llama's existing step1_cot_responses.json (CoT generations for
@@ -25,7 +25,7 @@ Pipeline:
   4. Subclassify (rule-based, then judge).
 
 Reuses the canonical perturbation logic from `experiments/pipeline/perturb_and_continue.py`
-and the exp_1_1 text-archetype functions.
+and the controls/gsm8k_text_perturbations.py text-archetype functions.
 
 Usage:
   python experiments/models/llama_matched_controls.py --stage generate
@@ -62,7 +62,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_1_5_llama_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"llama_matched_controls_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -87,7 +87,7 @@ def _load_module(filename: str, modname: str):
     return mod
 
 
-# ---- 5 text-based strategies for GSM8K (from exp_1_1, re-expressed for a numeric answer) ----
+# ---- 5 text-based strategies for GSM8K (from controls/gsm8k_text_perturbations.py, re-expressed for a numeric answer) ----
 
 TEXT_STRATEGIES = [
     "confidence_injection", "wrong_elimination", "false_analogy",
@@ -545,8 +545,8 @@ def _print_diagnostic(records):
     print("ITEM C — LLAMA-3.1-8B-INSTRUCT REPLICATION OF NEW FINDINGS")
     print("=" * 70)
     print("Gemma reference (from this revision):")
-    print("  GSM8K text       : C =  6.2%  (exp_1_1)")
-    print("  multistep_arith  : C = 64.5%  (exp_1_3)")
+    print("  GSM8K text       : C =  6.2%  (controls/gsm8k_text_perturbations.py)")
+    print("  multistep_arith  : C = 64.5%  (controls/hard_task_numerical_perturbations.py)")
     print("-" * 70)
     by = {}
     for r in clear:
@@ -565,7 +565,7 @@ def _print_diagnostic(records):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Llama replication of exp_1_1 + exp_1_3 (item C)")
+    ap = argparse.ArgumentParser(description="Llama replication of controls/gsm8k_text_perturbations.py + controls/hard_task_numerical_perturbations.py (item C)")
     ap.add_argument("--stage", choices=["generate", "judge", "both"], default="generate")
     ap.add_argument("--max-per-arm", type=int, default=None)
     ap.add_argument("--max-jobs", type=int, default=None)

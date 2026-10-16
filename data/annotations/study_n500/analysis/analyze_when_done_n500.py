@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """
-Post-annotation analysis for the camera-ready n=500 two-annotator study
-(revision item 2.6: n >= 500, two annotators, Cohen's kappa).
+Post-annotation analysis for the camera-ready n=500 two-annotator study (n >= 500, two annotators, Cohen's kappa).
 
 Run after BOTH annotators return their filled CSVs. Computes:
 
@@ -341,7 +340,7 @@ def report(joined) -> dict:
 
 def main():
     ap = argparse.ArgumentParser(
-        description="n=500 two-annotator agreement analysis (item 2.6)")
+        description="n=500 two-annotator agreement analysis")
     ap.add_argument("--annotator1", type=Path, required=True,
                     help="Annotator 1's filled CSV")
     ap.add_argument("--annotator2", type=Path, required=True,

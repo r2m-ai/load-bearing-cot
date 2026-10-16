@@ -1,14 +1,13 @@
 """
-exp_4_2_multidir_steering.py — multi-direction activation steering
-(revision Theme 4, item 4.2 + 4.4).
+Multi-direction activation steering.
 
-Reviewer DzAa #4: single-direction linear steering is underpowered. The claim
+Motivation: single-direction linear steering is underpowered. The claim
 "readable but not controllable" overgeneralizes from one intervention class.
 This script tests whether steering along multiple directions in a *defensible*
 k-dim subspace at layer 21 can flip behavioral type — the committed
 multi-direction follow-up.
 
-Two bases (per researcher sign-off 2026-05-19):
+Two bases :
 
   M2 (primary)
     {class-mean-difference direction (Type-C vs non-C)}
@@ -28,8 +27,8 @@ residual-stream at layer 21 during forced continuation on the deterministic
 single-direction experiment to keep the comparison matched). Generations are
 greedy-decoded, regex-scored (is_correct), and rule-based classified into
 {TYPE_A bypass, TYPE_B self-correction, TYPE_C error-propagation,
-NEEDS_JUDGE, UNCLEAR}. The judge stage re-scores ambiguous cases — item 4.4,
-because regex answer-correctness is blind to A↔B flips (same lesson as §3.3).
+NEEDS_JUDGE, UNCLEAR}. The judge stage re-scores ambiguous cases
+because regex answer-correctness is blind to A↔B flips (same lesson as the paper).
 
 Reference points (paper, single-direction at layer 21, α ∈ [−10, +10]):
   TYPE_A error rate: 0.0%  (pooled 0/726; exact-binomial UB 0.41%)
@@ -40,13 +39,13 @@ A meaningful multi-direction result would either (a) move Type A off 0% or
 move Type C off ceiling for some k (positive — controllability claim must
 rescope further), or (b) confirm the null at k ∈ {2, 4, 8} for both bases
 (negative — strengthens "not controllable by tested steering"). Lead the
-DzAa §5.4 update with whichever side lands.
+Report whichever side lands.
 
 Stages:
   extract: build the two bases at k_max=8 from a held-out set, save to disk.
   steer  : run 6 dose-response sweeps (3 k × 2 bases) × 11 α × 198 examples;
            rule-based classify continuations.
-  judge  : LLM-judge re-score for NEEDS_JUDGE / UNCLEAR (item 4.4).
+  judge  : LLM-judge re-score for NEEDS_JUDGE / UNCLEAR.
 
 Usage:
   python experiments/steering/multi_direction.py --stage extract
@@ -90,7 +89,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
         logging.FileHandler(
-            LOG_DIR / f"exp_4_2_multidir_steering_{datetime.now():%Y%m%d_%H%M%S}.log"),
+            LOG_DIR / f"multi_direction_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -200,7 +199,7 @@ def _adaptive_batch_size(max_input_length: int, base_limit: int = 240000,
 
     Defaults tuned for H200 (141 GB VRAM) running a 9B model in bf16
     (~18 GB weights + ~10 GB scratch + KV cache + activations + steering
-    hook overhead). Measured exp_1_1 at batch=16 uses 22 GB, exp_1_3 at
+    hook overhead). Measured controls/gsm8k_text_perturbations.py at batch=16 uses 22 GB, controls/hard_task_numerical_perturbations.py at
     batch=32 uses 22 GB → plenty of headroom for batch 48-64. Adjust
     downward on H100 (80 GB) — drop cap to 32 and base_limit to 160k.
     """
@@ -417,7 +416,7 @@ class MultiDirSteeringHook:
     `directions.sum(dim=0)` has magnitude √k, so the intervention
     magnitude at strength α is √k · |α|. This means α=10 in the k=4
     sweep delivers ~2× the residual-stream perturbation of α=10 in the
-    single-direction sweep. Report this scaling explicitly in §5.4 so
+    single-direction sweep. Report this scaling explicitly in the paper so
     reviewers can interpret the dose-response numbers. We keep the sum
     (rather than normalizing to unit norm) because (i) it matches the
     "every direction contributes equally with coefficient α" semantics
@@ -536,7 +535,7 @@ def _generate_batch(model, tokenizer, batch_pairs, hook_directions, alpha, layer
                 "baseline_label_3class": pair.get("label_3class", ""),
                 "perturbation_point": pair.get("perturbation_point", ""),
                 "perturbation_strategy": pair.get("perturbation_strategy", ""),
-                # Carried through for 2b_subclassify (reads perturbation_description
+                # Carried through for pipeline/classify_behaviors.py (reads perturbation_description
                 # and correct_letter via extract_perturbed_values, plus original /
                 # perturbed step text for downstream judge prompts).
                 "perturbation_description": pair.get("perturbation_description", ""),
@@ -605,10 +604,10 @@ def select_198set(clear_pairs, n_per_type, exclude_first):
 def rule_classify(rec, sub2b):
     """
     Run the same dataset-specific rule-based subclassifier used by the main
-    pipeline (matched to experiments/pipeline/classify_behaviors.py). 2b only exposes
-    classify_gsm8k and classify_mmlu; per exp_1_3_confound_numerical.py:488
+    pipeline (matched to experiments/pipeline/classify_behaviors.py). pipeline/classify_behaviors.py only exposes
+    classify_gsm8k and classify_mmlu; per hard_task_numerical_perturbations.py:488
     BBH is routed through classify_mmlu (same option-letter logic). The
-    behavior field is set following the same convention as exp_1_1:
+    behavior field is set following the same convention as controls/gsm8k_text_perturbations.py:
     self_corrects when the regex answer is correct, propagates_error when
     we extracted *some* answer that doesn't match, else unclear.
     """
@@ -783,7 +782,7 @@ def _print_rule_based_summary(records):
     print("\nNOTE: A/B (bypass vs self-correct) is only final AFTER --stage judge.")
 
 
-# ---- stage: judge (item 4.4 — re-score regex-ambiguous cases) ----
+# ---- stage: judge (this control — re-score regex-ambiguous cases) ----
 
 def stage_judge(args):
     j9b = _load_module("pipeline/judge_behaviors.py", "judge_9b")
@@ -815,7 +814,7 @@ def stage_judge(args):
             unclear, args.api_key, j9b.JUDGE_PROMPT_EXTRACT, parse_extract,
             model=args.judge_model, concurrency=args.concurrency, max_tokens=50))
         # For extract-stage we resolve to A vs C by comparing the judged
-        # numeric/text answer against reference, matching exp_1_1.
+        # numeric/text answer against reference, matching controls/gsm8k_text_perturbations.py.
         for r in ex:
             jl = r.get("judge_label")
             if not jl:
@@ -872,11 +871,11 @@ def _print_flip_diagnostic(records):
     """
     Pivot table: for each (basis, k), report per-baseline-type *flip-out* rate
     at each α. A "flip" means the steered continuation's judge label differs
-    from the baseline subtype. This is the right metric for item 4.4 — regex
+    from the baseline subtype. This is the right metric for this control — regex
     is_correct misses A↔B flips entirely.
     """
     print("\n" + "=" * 80)
-    print("ITEM 4.2 — MULTI-DIRECTION STEERING: FLIP RATES BY (BASIS, K, BASELINE TYPE)")
+    print("MULTI-DIRECTION STEERING: FLIP RATES BY (BASIS, K, BASELINE TYPE)")
     print("=" * 80)
     print("Baseline single-direction reference (paper, layer 21):")
     print("  TYPE_A: 0.0% flip across α ∈ [-10, +10]  (UB 0.41% pooled)")
@@ -917,9 +916,9 @@ def _print_flip_diagnostic(records):
     print("=" * 80)
     print("Interpretation:")
     print("  * If TYPE_A flip stays near 0 and TYPE_C flip stays near 0 for both bases")
-    print("    at every k ∈ {2,4,8}: null confirmed; rescope §5.4 narrowly.")
+    print("    at every k ∈ {2,4,8}: null confirmed; rescope the paper narrowly.")
     print("  * If TYPE_A flip rises ≥10pp OR TYPE_C flip rises ≥10pp at any (basis,k,α):")
-    print("    multi-direction is informative; report and re-frame §5.4 conclusion.")
+    print("    multi-direction is informative; report and re-frame the paper conclusion.")
     print("=" * 80)
 
 
@@ -927,7 +926,7 @@ def _print_flip_diagnostic(records):
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Multi-direction activation steering (item 4.2 + 4.4)")
+        description="Multi-direction activation steering")
     ap.add_argument("--stage", choices=["extract", "steer", "judge", "all"],
                     default="steer", help="pipeline stage")
     ap.add_argument("--target-layer", type=int, default=TARGET_LAYER)

@@ -1,17 +1,17 @@
 """
-Script 15 (revision Theme 1, item 1.1 + 1.5d): Text-based perturbations on GSM8K.
+Text-based perturbations on GSM8K.
 
-Reviewer DzAa #1: the difficulty->faithfulness gradient is confounded with
+Motivation: the difficulty->faithfulness gradient is confounded with
 perturbation TYPE. GSM8K used numerical perturbations (94.5% bypass); MMLU/BBH
 used textual ones. To disentangle, we apply the SAME FIVE text-based strategy
 archetypes used on MMLU/BBH to GSM8K, re-expressed for a numeric answer so the
 rhetorical structure is matched (assert / eliminate / analogize / reverse /
 contradict toward a wrong *number* instead of a wrong *option letter*).
 
-The single decisive number (item 1.5d): the bypass rate of text perturbations
+The single decisive number: the bypass rate of text perturbations
 on GSM8K.
   - stays high (~90%)  -> gradient is task-driven, not perturbation-driven
-                          (thesis vindicated; lead the rebuttal with this).
+                          (thesis vindicated; this is the headline contrast).
   - drops to MMLU/BBH-like error propagation -> the confound is real.
 
 Design notes (why this is a *matched* comparison):
@@ -23,7 +23,7 @@ Design notes (why this is a *matched* comparison):
     identically to the numbers in the paper.
   - Canonical strategy names (confidence_injection, wrong_elimination,
     false_analogy, reversed_logic, premise_contradiction) so the variance
-    decomposition (Script 16 / item 1.5) can pair them across datasets;
+    decomposition can pair them across datasets;
     `source == "gsm8k"` distinguishes these from the MMLU/BBH rows.
   - Output goes to dedicated data/processed/confound_gsm8k_text_*.json files.
     The main expanded_pairs.json is NOT touched (merge happens later in the
@@ -71,7 +71,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_1_1_confound_gsm8k_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"gsm8k_text_perturbations_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -186,7 +186,7 @@ STRATEGY_FN = {
 }
 
 
-# ---- continuation prompt (chat-template assistant prefix; mirrors Script 2) ----
+# ---- continuation prompt (chat-template assistant prefix; mirrors pipeline/perturb_and_continue.py) ----
 
 def build_continuation_prompt(prompt: str, prefix: str, tokenizer) -> str:
     messages = [
@@ -452,7 +452,7 @@ def _print_rule_based_summary(records):
     print("\nNOTE: A/B (bypass vs self-correct) is only final AFTER --stage judge.")
 
 
-# ---- judge stage (reuses 9b prompts + async runner verbatim) ----
+# ---- judge stage (reuses the pipeline/judge_behaviors.py prompts and async runner verbatim) ----
 
 def stage_judge(args):
     j9b = _load_module("pipeline/judge_behaviors.py", "judge_9b")
@@ -520,7 +520,7 @@ def stage_judge(args):
     _print_decisive_diagnostic(pairs)
 
 
-# ---- item 1.5d: the decisive diagnostic ----
+# ---- this control: the decisive diagnostic ----
 
 def _print_decisive_diagnostic(pairs):
     from collections import Counter
@@ -535,7 +535,7 @@ def _print_decisive_diagnostic(pairs):
     selfc = c["self_correction"] / tot * 100
     errp = c["error_propagation"] / tot * 100
     print("\n" + "=" * 64)
-    print("ITEM 1.5d — DECISIVE DIAGNOSTIC: TEXT PERTURBATIONS ON GSM8K")
+    print("DECISIVE DIAGNOSTIC: TEXT PERTURBATIONS ON GSM8K")
     print("=" * 64)
     print(f"  n (clear)        : {tot}")
     print(f"  Silent bypass (A): {bypass:5.1f}%")
@@ -550,19 +550,19 @@ def _print_decisive_diagnostic(pairs):
     if bypass >= 75:
         print("  -> Bypass stays HIGH under textual perturbations.")
         print("     Gradient is TASK-driven, not perturbation-driven. Thesis")
-        print("     vindicated; lead the DzAa rebuttal with this contrast.")
+        print("     vindicated; this is the decisive contrast.")
     elif errp >= 18:
         print("  -> Error propagation rises to MMLU/BBH-like levels.")
         print("     The perturbation-type CONFOUND is real; trigger the 1.7")
         print("     pessimistic branch (scope qualifier / reframe).")
     else:
         print("  -> Intermediate. Report with the variance decomposition")
-        print("     (Script 16 / item 1.5) before deciding the 1.7 branch.")
+        print("     (see the variance decomposition) before deciding how to proceed.")
     print("=" * 64)
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Confound: text perturbations on GSM8K (item 1.1 + 1.5d)")
+    ap = argparse.ArgumentParser(description="Confound: text perturbations on GSM8K")
     ap.add_argument("--stage", choices=["generate", "judge", "both"], default="generate")
     ap.add_argument("--max-baselines", type=int, default=None,
                     help="cap unique GSM8K baselines (~360 -> ~5,400 continuations)")

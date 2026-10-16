@@ -1,6 +1,6 @@
 """
 Compute AUROC for probe results at best layers.
-Uses same features/labels as 10b_retrain_probes.py but adds roc_auc_score.
+Uses the same features and labels as probes/retrain_probes.py, and adds roc_auc_score.
 """
 
 import json
@@ -154,7 +154,7 @@ def main():
     le_faithful = LabelEncoder()
     y_faithful = le_faithful.fit_transform([l for l, v in zip(labels_faithful, valid_mask) if v])
 
-    # Best layers from table5_7_probe_with_ci.csv
+    # Best layers from probe_with_ci.csv
     best_layers = {
         "3-class (A/B/C)": {"linear": 23, "mlp": 22},
         "Binary bypass": {"linear": 10, "mlp": 10},
@@ -202,7 +202,7 @@ def main():
             })
 
     df = pd.DataFrame(results)
-    out_path = FIGURES_DIR / "table_auroc.csv"
+    out_path = FIGURES_DIR / "probe_auroc.csv"
     df.to_csv(out_path, index=False)
     print(f"\nSaved: {out_path}")
 

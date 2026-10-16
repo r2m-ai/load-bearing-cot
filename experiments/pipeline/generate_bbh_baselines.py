@@ -1,5 +1,5 @@
 """
-Script 11: BBH (BIG-Bench Hard) dataset download + CoT generation.
+BBH (BIG-Bench Hard) dataset download + CoT generation.
 
 Downloads BBH from HuggingFace, formats for our pipeline, and generates CoT.
 BBH tasks are text-based, so we reuse MMLU perturbation strategies.

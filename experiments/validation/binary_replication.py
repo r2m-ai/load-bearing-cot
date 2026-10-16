@@ -1,8 +1,8 @@
 """
-Exp 1c: Binary (C vs non-C) replication of all main results.
+Binary (C vs non-C) replication of all main results.
 No new data needed — just re-cuts existing expanded_pairs.json.
 
-Outputs: results/robustness/exp1c_binary_replication.json
+Outputs: results/validation/robustness/binary_replication.json
 """
 
 import json
@@ -25,7 +25,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp1c_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"binary_replication_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -177,7 +177,7 @@ def main():
     logging.info(f"Position effect z-stat: {pos_results.get('early_vs_late_z', 'N/A')}")
 
     # Save
-    outpath = RESULTS / "exp1c_binary_replication.json"
+    outpath = RESULTS / "binary_replication.json"
     with open(outpath, "w") as f:
         json.dump(results, f, indent=2)
     logging.info(f"Results saved to {outpath}")

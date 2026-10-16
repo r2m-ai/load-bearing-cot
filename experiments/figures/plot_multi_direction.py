@@ -1,5 +1,5 @@
 """Generate figures/multidir_steering.png — per-type flip rate vs alpha across
-(basis, k) combos for exp_4_2 (multi-direction steering)."""
+(basis, k) combos for steering/multi_direction.py (multi-direction steering)."""
 import json
 from pathlib import Path
 import numpy as np

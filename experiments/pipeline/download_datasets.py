@@ -1,5 +1,5 @@
 """
-Script 0: Download GSM8K + MMLU datasets.
+Download GSM8K + MMLU datasets.
 
 Downloads from HuggingFace Hub:
 - GSM8K: Full test set (~1.3K), filtered for multi-step problems (3+ calculation steps)

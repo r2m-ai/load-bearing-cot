@@ -1,5 +1,5 @@
 """
-Script 2 (v3): Continuation-based perturbation with improved MMLU strategies.
+Continuation-based perturbation with improved MMLU strategies.
 
 Approach:
 1. Perturb a reasoning step in the CoT
@@ -616,7 +616,7 @@ def main():
     # Summary
     throughput = len(pending) / inference_time if inference_time > 0 else 0
     print(f"\n{'='*60}")
-    print(f"CONTINUATION-BASED PERTURBATION RESULTS (v3)")
+    print(f"CONTINUATION-BASED PERTURBATION RESULTS")
     print(f"{'='*60}")
     print(f"Backend: {'vLLM' if use_vllm else 'HuggingFace'}")
     print(f"Total: {len(pending)} ({inference_time:.0f}s, {throughput:.1f} ex/s)")

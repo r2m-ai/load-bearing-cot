@@ -1,5 +1,5 @@
 """
-Script 7 (v3): Behavioral analysis — position gradient and strategy effectiveness.
+Behavioral analysis — position gradient and strategy effectiveness.
 
 Produces figures and tables for the paper's behavioral results section:
 - Position gradient: how causal influence varies with perturbation position
@@ -8,7 +8,7 @@ Produces figures and tables for the paper's behavioral results section:
 - Source comparison: GSM8K vs MMLU behavioral differences
 
 Input: data/processed/subclassified_pairs.json
-Output: figures/figure5_behavioral.png, figures/table4_behavioral.csv
+Output: figures/behavioral_breakdown.png, figures/behavioral_taxonomy.csv
 """
 
 import json
@@ -157,8 +157,8 @@ def main():
 
     plt.suptitle("Behavioral Analysis: How Models Process Perturbed Chain-of-Thought", fontsize=13)
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "figure5_behavioral.png", dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure5_behavioral.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "behavioral_breakdown.png", dpi=300, bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "behavioral_breakdown.pdf", bbox_inches="tight")
     print("Saved Figure 5")
 
     # ---- Table 4: Full behavioral breakdown ----
@@ -200,7 +200,7 @@ def main():
             })
 
     df = pd.DataFrame(rows)
-    df.to_csv(FIGURES_DIR / "table4_behavioral.csv", index=False)
+    df.to_csv(FIGURES_DIR / "behavioral_taxonomy.csv", index=False)
     print("Saved Table 4")
 
     # ---- Print Summary ----

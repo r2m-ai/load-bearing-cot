@@ -1,5 +1,5 @@
 """
-Script 12 (v7): Causal intervention via activation steering.
+Causal intervention via activation steering.
 
 Takes the error propagation direction from the linear probe,
 injects it into the model's hidden states during generation,
@@ -9,7 +9,7 @@ If steering TOWARD the direction increases errors -> causal evidence.
 If steering AWAY decreases errors -> bidirectional control.
 
 Input: data/processed/subclassified_pairs.json, model
-Output: figures/figure9_dose_response.png, figure10_layer_intervention.png
+Output: figures/steering_dose_response.png, steering_layer_specificity.png
 
 Optimized for H100 GPU throughput via batched generation and batched
 direction extraction.
@@ -825,8 +825,8 @@ def main():
 
     plt.suptitle("Causal Intervention: Activation Steering with Error Propagation Direction", fontsize=13)
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "figure9_dose_response.png", dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure9_dose_response.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "steering_dose_response.png", dpi=300, bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "steering_dose_response.pdf", bbox_inches="tight")
     print(f"\nSaved Figure 9")
 
     # ---- Figure 10: Layer Specificity ----
@@ -854,8 +854,8 @@ def main():
         ax.set_title("Layer Specificity: Which Layers Are Causally Involved?")
         ax.legend()
         plt.tight_layout()
-        plt.savefig(FIGURES_DIR / "figure10_layer_specificity.png", dpi=300, bbox_inches="tight")
-        plt.savefig(FIGURES_DIR / "figure10_layer_specificity.pdf", bbox_inches="tight")
+        plt.savefig(FIGURES_DIR / "steering_layer_specificity.png", dpi=300, bbox_inches="tight")
+        plt.savefig(FIGURES_DIR / "steering_layer_specificity.pdf", bbox_inches="tight")
         print(f"Saved Figure 10")
 
     # ---- Table 7 ----
@@ -873,7 +873,7 @@ def main():
                 "Correct": sub["is_correct"].sum(),
                 "Avg_Response_Length": f"{sub['response_length'].mean():.0f}",
             })
-    pd.DataFrame(table_rows).to_csv(FIGURES_DIR / "table7_intervention.csv", index=False)
+    pd.DataFrame(table_rows).to_csv(FIGURES_DIR / "steering_dose_response.csv", index=False)
     print(f"Saved Table 7")
 
     # ---- Summary ----

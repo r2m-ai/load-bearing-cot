@@ -1,10 +1,10 @@
 """
-Script 3: Extract hidden states from all layers during CoT generation.
+Extract hidden states from all layers during CoT generation.
 
 For each faithful/unfaithful pair, runs a forward pass through the model
 and saves hidden states at all layers. These are used for:
-- Logit lens analysis (Script 4)
-- Linear probe training (Script 5)
+- Logit-lens analysis (probes/logit_lens.py)
+- Linear probe training (probes/train_linear_probe.py)
 
 H100 Optimizations:
 - Flash Attention 2 (Hopper-optimized)

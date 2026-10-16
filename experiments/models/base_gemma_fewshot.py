@@ -1,9 +1,9 @@
 """
-exp_3_2b_base_gemma_fewshot.py — base Gemma-2-9B with **few-shot CoT**
-prompting (item D: complete the base-vs-IT story that exp_3_2 (zero-shot)
+Base Gemma-2-9B with **few-shot CoT**
+prompting (item D: complete the base-vs-IT story that models/base_gemma.py (zero-shot)
 left as a viability-FAIL).
 
-exp_3_2 ran base Gemma under zero-shot and got 0% multi-step CoT
+models/base_gemma.py ran base Gemma under zero-shot and got 0% multi-step CoT
 compliance across all three sources — the viability gate exited
 cleanly. Per the 3.5p caveat in the plan, that result is honest but
 incomplete: base Gemma may produce structured CoT under few-shot
@@ -20,7 +20,7 @@ This script:
      source (subject to disk + compute budget).
 
 Inherits all the vLLM-V0 + tokenizer-monkey-patch + cache-dir-fix
-plumbing from exp_3_2. Output goes to a separate dir to avoid
+plumbing from models/base_gemma.py. Output goes to a separate dir to avoid
 clobbering the zero-shot run.
 
 Usage:
@@ -28,7 +28,7 @@ Usage:
   python experiments/models/base_gemma_fewshot.py --stage viability
 """
 
-# Import everything from exp_3_2 and override only the prompt builders.
+# Import everything from models/base_gemma.py and override only the prompt builders.
 
 import argparse
 import importlib.util
@@ -68,7 +68,7 @@ for d in [MODEL_DIR, HIDDEN_DIR]:
     d.mkdir(parents=True, exist_ok=True)
 
 
-# Import the original exp_3_2 module to inherit pipeline functions.
+# Import the original models/base_gemma.py module to inherit pipeline functions.
 def _load(filename, modname):
     spec = importlib.util.spec_from_file_location(
         modname, SCRIPTS_REV / filename)
@@ -79,7 +79,7 @@ def _load(filename, modname):
 
 _E32 = _load("models/base_gemma.py", "exp_3_2")
 
-# Reuse most of exp_3_2's functions verbatim.
+# Reuse most of models/base_gemma.py's functions verbatim.
 _E32.MODEL_DIR = MODEL_DIR
 _E32.HIDDEN_DIR = HIDDEN_DIR
 
@@ -88,7 +88,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_3_2b_fewshot_{timestamp}.log"),
+        logging.FileHandler(LOG_DIR / f"base_gemma_fewshot_{timestamp}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -209,7 +209,7 @@ def build_raw_prompt_fewshot(q: dict) -> str:
     return format_bbh_prompt_fewshot(q["question"])
 
 
-# Patch exp_3_2's prompt builders so its viability + step1 pipeline use
+# Patch models/base_gemma.py's prompt builders so its viability + step1 pipeline use
 # the few-shot versions.
 _E32.format_gsm8k_prompt_raw = format_gsm8k_prompt_fewshot
 _E32.format_mmlu_prompt_raw = format_mmlu_prompt_fewshot
@@ -223,7 +223,7 @@ _E32.build_raw_prompt = build_raw_prompt_fewshot
 
 def main():
     ap = argparse.ArgumentParser(
-        description="Base Gemma + few-shot CoT (item D — complement to exp_3_2)")
+        description="Base Gemma + few-shot CoT (item D — complement to models/base_gemma.py)")
     ap.add_argument("--stage", choices=["viability", "full"], default="full")
     ap.add_argument("--max-examples", type=int, default=None)
     ap.add_argument("--batch-size", type=int, default=24)
@@ -235,7 +235,7 @@ def main():
     ap.add_argument("--override-viability", action="store_true")
     args = ap.parse_args()
 
-    # Call exp_3_2's main flow with patched functions. Easiest: replicate
+    # Call models/base_gemma.py's main flow with patched functions. Easiest: replicate
     # the main() logic but parameterize on our few-shot helpers.
     # Since we've already monkey-patched build_raw_prompt etc., we can
     # just call _E32.main() — but it has its own argparse. Recreate flow.
@@ -248,14 +248,14 @@ def main():
     logging.info("=" * 64)
     logging.info(f"Stage: {args.stage}")
     logging.info(f"Output dir: {MODEL_DIR}")
-    logging.info("NB: this is item D — few-shot complement to exp_3_2 zero-shot. "
+    logging.info("NB: this is item D — few-shot complement to models/base_gemma.py zero-shot. "
                  "Compare base+fs vs IT+zs results to isolate instruction tuning.")
 
     if args.stage == "viability":
         _E32.stage_viability(args)
         return
 
-    # Full pipeline (mirrors exp_3_2.main)
+    # Full pipeline (mirrors models/base_gemma.py.main)
     model = None
     tokenizer = None
     is_vllm = False

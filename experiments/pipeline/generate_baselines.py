@@ -1,5 +1,5 @@
 """
-Script 1: Generate Chain-of-Thought responses using Gemma-2-9B-IT.
+Generate Chain-of-Thought responses using Gemma-2-9B-IT.
 
 Uses vLLM for high-throughput inference:
 - Continuous batching (no padding waste)

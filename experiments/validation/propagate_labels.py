@@ -1,5 +1,5 @@
 """
-V9 Step 0: Propagate corrected labels from expanded_pairs.json to
+Propagate corrected labels from expanded_pairs.json to
 subclassified_pairs.json and faithful_unfaithful_pairs.json.
 
 The v9 fix updated expanded_pairs.json (3,229 BBH examples reclassified).

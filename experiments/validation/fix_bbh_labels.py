@@ -1,5 +1,5 @@
 """
-V9 Fix: Correct BBH misclassification caused by answer format mismatch.
+Correct BBH misclassification caused by answer format mismatch.
 
 Bug: check_correct() in 2_create_perturbations.py compared extracted answer ("A")
 against correct_letter field, which is empty for BBH. BBH's reference_answer uses
@@ -7,7 +7,7 @@ against correct_letter field, which is empty for BBH. BBH's reference_answer use
 
 This script:
 1. Identifies misclassified BBH examples (answered correctly but labeled error_propagation)
-2. Re-classifies them using rule-based heuristics (same as 2b_subclassify.py)
+2. Re-classifies them using rule-based heuristics (same as pipeline/classify_behaviors.py)
 3. Sends NEEDS_JUDGE cases to Claude Haiku for A/B classification
 4. Updates expanded_pairs.json with corrected labels
 5. Recomputes all statistics
@@ -61,7 +61,7 @@ def normalize_bbh_answer(ans: str) -> str:
     return ans.upper()
 
 
-# ---- Rule-based classification (mirrors 2b_subclassify.py) ----
+# ---- Rule-based classification (mirrors pipeline/classify_behaviors.py) ----
 
 CORRECTION_KEYWORDS = [
     "wait", "actually", "however", "but", "correction", "mistake",
@@ -241,9 +241,9 @@ async def main():
             "corrected_c_count": corrected_c,
             "corrected_c_rate": round(corrected_c / (original_a + original_c) * 100, 1),
         }
-        with open(RESULTS / "v9_bbh_fix_analysis.json", "w") as f:
+        with open(RESULTS / "analysis.json", "w") as f:
             json.dump(analysis, f, indent=2)
-        logging.info(f"Analysis saved to {RESULTS / 'v9_bbh_fix_analysis.json'}")
+        logging.info(f"Analysis saved to {RESULTS / 'analysis.json'}")
         return
 
     # ---- Step 3: LLM Judge for ambiguous cases ----
@@ -381,9 +381,9 @@ async def main():
             "n": st,
         }
 
-    with open(RESULTS / "v9_bbh_fix_results.json", "w") as f:
+    with open(RESULTS / "results.json", "w") as f:
         json.dump(results, f, indent=2)
-    logging.info(f"\nResults saved to {RESULTS / 'v9_bbh_fix_results.json'}")
+    logging.info(f"\nResults saved to {RESULTS / 'results.json'}")
 
 
 if __name__ == "__main__":

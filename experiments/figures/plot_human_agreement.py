@@ -1,11 +1,11 @@
-"""figures/human_agreement.png -- n=500 two-annotator human-validation study.
+"""Figures/human_agreement.png -- n=500 two-annotator human-validation study.
 
 Left : per-source agreement of the human consensus (499 rows: 487 agreed +
        12 adjudicated in favour of the annotator matching the production label) with the paper's production label, three-way (A/B/C)
        and binary (C vs non-C); Cohen's kappa per source above the bars.
 Right: per-source agreement of each judge prompt variant (and the production
        label) with the human consensus on the 407 agreed rows covered by the
-       four-variant re-judging (revision item 2.0).
+       four-variant re-judging (revision this control).
 
 Reads data/annotations/study_n500/analysis/merged_labels_n500.csv.
 """

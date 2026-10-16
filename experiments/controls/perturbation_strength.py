@@ -1,8 +1,8 @@
 """
-exp_1_4_strength_axis.py — perturbation-strength axis (item 1.4, A+B).
+Perturbation-strength axis.
 
-Reviewer y8FE #5 asked for "perturbation type **and strength**" across
-datasets. The original plan addressed type (exp_1_1, exp_1_3) but not
+This control addresses "perturbation type **and strength**" across
+datasets. The original plan addressed type (controls/gsm8k_text_perturbations.py, controls/hard_task_numerical_perturbations.py) but not
 strength. This script fills the gap by sweeping numerical-perturbation
 *magnitude* on:
 
@@ -61,7 +61,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_1_4_strength_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"perturbation_strength_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -236,7 +236,7 @@ def estimate_max_tokens(total_steps: int, target_idx: int) -> int:
 
 
 def load_model_vllm():
-    """Force vLLM V0 + Gemma tokenizer monkey-patch (same as exp_3_1 fix).
+    """Force vLLM V0 + Gemma tokenizer monkey-patch (same as models/deepseek.py fix).
     vLLM 0.8.5 + Gemma2 fails at `rope_theta` config init — fallback to HF."""
     import os
     from transformers import AutoTokenizer
@@ -490,7 +490,7 @@ def stage_judge(args):
 
 def _print_strength_diagnostic(records):
     print("\n" + "=" * 70)
-    print("ITEM 1.4 (A+B) — PERTURBATION STRENGTH AXIS DIAGNOSTIC")
+    print("PERTURBATION STRENGTH AXIS DIAGNOSTIC")
     print("=" * 70)
     print("Reference (paper, blatant magnitude = num*2+3):")
     print("  GSM8K          : C =  3.9%")
@@ -512,12 +512,12 @@ def _print_strength_diagnostic(records):
     print("Interpretation:")
     print("  * If C(subtle) ≈ C(moderate) ≈ C(blatant) → difficulty-driven, magnitude-robust")
     print("  * If C scales with magnitude → perturbation salience matters; report")
-    print("    the scale; reframes the §5.1 claim slightly toward 'engagement × difficulty'")
+    print("    the scale; reframes the claim slightly toward 'engagement × difficulty'")
     print("=" * 70)
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Perturbation strength axis (item 1.4)")
+    ap = argparse.ArgumentParser(description="Perturbation strength axis")
     ap.add_argument("--stage", choices=["generate", "judge", "both"], default="generate")
     ap.add_argument("--max-per-group", type=int, default=None)
     ap.add_argument("--max-jobs", type=int, default=None)

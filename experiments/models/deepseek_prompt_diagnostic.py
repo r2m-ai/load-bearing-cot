@@ -1,12 +1,12 @@
 """
-exp_3_1b_deepseek_prompts.py — diagnose the 38.5% GSM8K accuracy on
+Diagnose the 38.5% GSM8K accuracy on
 DeepSeek-R1-Distill-Qwen-7B (item E).
 
-The paper's main exp_3_1 result on DeepSeek was 38.5% GSM8K accuracy.
+The paper's main models/deepseek.py result on DeepSeek was 38.5% GSM8K accuracy.
 Public benchmarks for the same model claim ~85%. This script tests 3
 prompt formats on 100 GSM8K questions to identify the format gap:
 
-  1. **current** : our exp_3_1 prompt ("Solve... Show your reasoning...
+  1. **current** : our models/deepseek.py prompt ("Solve... Show your reasoning...
                   Answer: <number>\\n\\nQuestion: X\\n\\nSolution:")
   2. **plain**   : just the question (let R1's chat template + system
                   setup do the steering)
@@ -19,7 +19,7 @@ For each format we record:
   - mean think-block length (tokens in pre-`</think>`)
   - mean output length
 
-If "r1_official" recovers accuracy to ~70-85%, the exp_3_1 numbers
+If "r1_official" recovers accuracy to ~70-85%, the models/deepseek.py numbers
 underestimated DeepSeek's capability and we should rerun the full
 pipeline with that prompt. If all three are ~38%, the GSM8K result is
 genuinely DeepSeek's behavior on math-with-temperature-0.
@@ -56,7 +56,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_3_1b_prompts_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"deepseek_prompt_diagnostic_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -70,7 +70,7 @@ OUT_REPORT = PROCESSED / "deepseek_prompt_test.json"
 # ---- Three prompt formats ----
 
 def prompt_current(q: str) -> str:
-    """Our exp_3_1 prompt (the one that gave 38.5% acc)."""
+    """Our models/deepseek.py prompt (the one that gave 38.5% acc)."""
     return (
         "Solve the following math problem step by step. "
         "Show your reasoning clearly, then give the final numeric answer "
@@ -222,7 +222,7 @@ def main():
     print("-" * 70)
     print("Reference: public benchmarks claim ~85% GSM8K for this distill.")
     print("If r1_official recovers acc to >70%, recommend rerunning full")
-    print("exp_3_1 with that prompt; otherwise our exp_3_1 numbers stand.")
+    print("models/deepseek.py with that prompt; otherwise our models/deepseek.py numbers stand.")
     print("=" * 70)
     print(f"Saved: {OUT_REPORT}")
 

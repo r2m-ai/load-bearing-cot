@@ -1,4 +1,4 @@
-# Variance decomposition (item 1.5)
+# Variance decomposition
 
 n = 28,584
 

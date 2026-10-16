@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Post-annotation analysis (item 2.1 + 2.3).
+Post-annotation analysis.
 
 Run this after the annotator returns `data_to_label_DONE.csv` (filename
 free — pass via --annotated argument). Computes:
@@ -10,7 +10,7 @@ free — pass via --annotated argument). Computes:
      suggests the annotation protocol itself drifted.
   2. Overall human↔auto and human↔judge agreement, with 95% Wilson CIs.
   3. Per-source, per-stratum agreement breakdown.
-  4. (Item 2.3 add-on, optional) Probe-vs-human evaluation: load the
+  4. Probe-vs-human evaluation: load the
      existing N=2,000 bypass probe and evaluate its predictions on the
      200 human-labeled examples. Requires probe checkpoint path.
 
@@ -212,7 +212,7 @@ def report(joined: list[dict]) -> dict:
 
 
 def probe_vs_human(joined, probe_ckpt_path: Path) -> dict | None:
-    """Item 2.3 add-on. Evaluate existing N=2,000 bypass probe on the
+    """Evaluate existing N=2,000 bypass probe on the
     200 human-labeled subset. Requires a sklearn probe checkpoint at
     `probe_ckpt_path` that exposes .predict(X) and the X features for
     these 200 examples. See `experiments/probes/reframed_probe.py` for the
@@ -222,15 +222,15 @@ def probe_vs_human(joined, probe_ckpt_path: Path) -> dict | None:
     repo (the path depends on which probe ran in the paper's main
     pipeline). Returns None if not available."""
     if not probe_ckpt_path or not probe_ckpt_path.exists():
-        print(f"\n(probe checkpoint not provided / not found — skipping item 2.3 add-on)")
+        print(f"\n(probe checkpoint not provided / not found — skipping probe-vs-human add-on)")
         return None
     # Implement once the probe checkpoint path is fixed.
-    print(f"\nItem 2.3 (probe-vs-human eval) — TODO: wire up to {probe_ckpt_path}")
+    print(f"\nProbe-vs-human eval — TODO: wire up to {probe_ckpt_path}")
     return None
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Post-annotation agreement analysis (item 2.1 + 2.3)")
+    ap = argparse.ArgumentParser(description="Post-annotation agreement analysis")
     ap.add_argument("--annotated", type=Path, required=True,
                     help="Path to the annotator's filled CSV")
     ap.add_argument("--metadata", type=Path,
@@ -240,7 +240,7 @@ def main():
                     default=Path(__file__).parent / "results_n200.json",
                     help="Output JSON path")
     ap.add_argument("--probe-checkpoint", type=Path, default=None,
-                    help="Optional: bypass-probe checkpoint for item 2.3")
+                    help="Optional: bypass-probe checkpoint for the probe-vs-human comparison")
     args = ap.parse_args()
 
     joined = load_and_join(args.annotated, args.metadata)

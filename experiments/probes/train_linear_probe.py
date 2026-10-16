@@ -1,12 +1,12 @@
 """
-Script 5: Train linear probe to classify faithful vs. unfaithful CoT.
+Train linear probe to classify faithful vs. unfaithful CoT.
 
 Extracts features from hidden states at 5 key timepoints in the CoT,
 then trains a logistic regression classifier.
 
 Output:
-- figures/figure2_probe_accuracy.png
-- figures/table1_results.csv
+- figures/probe_accuracy.png
+- figures/probe_linear_baseline.csv
 - data/processed/probe_model.pkl
 """
 
@@ -294,9 +294,9 @@ def main():
     ax.set_ylim(0.3, 1.05)
 
     plt.tight_layout()
-    fig_path = FIGURES_DIR / "figure2_probe_accuracy.png"
+    fig_path = FIGURES_DIR / "probe_accuracy.png"
     plt.savefig(fig_path, dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure2_probe_accuracy.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "probe_accuracy.pdf", bbox_inches="tight")
     print(f"\nSaved Figure 2 to {fig_path}")
 
     # ---- Table 1: Classification metrics ----
@@ -312,7 +312,7 @@ def main():
         })
 
     df = pd.DataFrame(table_data)
-    table_path = FIGURES_DIR / "table1_results.csv"
+    table_path = FIGURES_DIR / "probe_linear_baseline.csv"
     df.to_csv(table_path, index=False)
     print(f"Saved Table 1 to {table_path}")
 

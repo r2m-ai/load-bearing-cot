@@ -1,5 +1,5 @@
 """
-Script 6: Probe evaluation and ablation studies.
+Probe evaluation and ablation studies.
 
 Runs additional analyses:
 1. Early detection: how much CoT do we need to detect unfaithfulness?
@@ -8,8 +8,8 @@ Runs additional analyses:
 4. Cross-task generalization: train on GSM8K, test on MMLU (and vice versa)
 
 Output:
-- figures/figure3_early_detection.png
-- figures/table2_generalization.csv
+- figures/probe_early_detection.png
+- figures/probe_generalization.csv
 """
 
 import json
@@ -254,9 +254,9 @@ def main():
                 f"{acc:.2f}", ha="center", va="bottom", fontsize=11)
 
     plt.tight_layout()
-    fig_path = FIGURES_DIR / "figure3_early_detection.png"
+    fig_path = FIGURES_DIR / "probe_early_detection.png"
     plt.savefig(fig_path, dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure3_early_detection.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "probe_early_detection.pdf", bbox_inches="tight")
     print(f"\nSaved Figure 3 to {fig_path}")
 
     # ---- 2. Cross-Task Generalization ----
@@ -295,11 +295,11 @@ def main():
         print(f"  {src}: {scores.mean():.3f} ± {scores.std():.3f} (n={mask.sum()})")
 
     # ---- Save Table 2 ----
-    table2_rows = []
+    generalization_rows = []
 
     # Early detection rows
     for r in early_results:
-        table2_rows.append({
+        generalization_rows.append({
             "Experiment": "Early Detection",
             "Setting": r["window"],
             "Accuracy": f"{r['accuracy_mean']:.3f} ± {r['accuracy_std']:.3f}",
@@ -307,14 +307,14 @@ def main():
 
     # Cross-task rows
     for r in cross_results:
-        table2_rows.append({
+        generalization_rows.append({
             "Experiment": "Cross-Task",
             "Setting": f"Train: {r['train']} → Test: {r['test']}",
             "Accuracy": f"{r['accuracy']:.3f} (F1: {r['f1']:.3f})",
         })
 
-    df = pd.DataFrame(table2_rows)
-    table_path = FIGURES_DIR / "table2_generalization.csv"
+    df = pd.DataFrame(generalization_rows)
+    table_path = FIGURES_DIR / "probe_generalization.csv"
     df.to_csv(table_path, index=False)
     print(f"\nSaved Table 2 to {table_path}")
 

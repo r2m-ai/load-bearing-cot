@@ -1,4 +1,4 @@
-# Probe-vs-Human Eval — n=198 (item 2.3)
+# Probe-vs-Human Eval — n=198
 
 **Setup**: layer-10 binary bypass probe (A vs non-A), logistic regression
 with balanced class weights, trained on the N=2,000 features set using
@@ -48,12 +48,12 @@ load-bearing.
   5.7pp on BBH (61.4% vs 67.1%). The N=2,000 training set is
   source-skewed (GSM-heavy by class imbalance), and the learned
   decision boundary doesn't transfer to BBH's bypass dynamics. This is
-  consistent with the §5.3-footnote caveat about cross-source
+  consistent with the discussion caveat about cross-source
   generalization.
 - **Probe-vs-training is 78.1%, probe-vs-human is 66.7%.** The 11.4pp
   gap is the compositional effect of (probe ↔ judge) × (judge ↔ human)
   — the probe optimizes for judge labels, humans disagree with the
-  judge ~26% of the time on this stratified subset (per item 2.1), so
+  judge ~26% of the time on this stratified subset (on the pilot), so
   probe ↔ human ≈ 0.78 × 0.74 ≈ 0.58 in expectation. The observed
   0.667 is slightly better than that lower bound.
 
@@ -65,7 +65,7 @@ load-bearing.
    line up by chance). The previously reported held-out probe accuracy
    of 92.9% was on essentially random labels. After fixing to the
    `pair_ids`-keyed lookup used by `experiments/probes/retrain_probes.py`:
-   - Held-out probe accuracy: 92.9% → **78.1%** (matches paper §5.3's
+   - Held-out probe accuracy: 92.9% → **78.1%** (matches the paper's
      "~80% binary bypass" at layer 10 ✅)
    - Class balance: 95% A → **67.2% A** (matches paper's "majority
      baseline 67.2% bypass" ✅)
@@ -76,24 +76,6 @@ load-bearing.
    features file's `pair_ids` is 15 rows (mix of sources). This
    collapses the in-training CI to [24.8, 69.9] but doesn't matter
    because the non-overlap arm covers 183 rows.
-
-## For the manuscript
-
-**§5.3 footnote language (draft)**:
-
-> "On the n=198 human-annotated continuations (item 2.1; two unclear
-> labels dropped), the layer-10 bypass probe agrees with the human
-> label 66.7% of the time (95% CI [59.8, 72.9]), vs a trivial-always-A
-> baseline of 60.6% on the same subset. Agreement is source-dependent:
-> the probe beats the trivial baseline by 21pp on MMLU (61.3% vs
-> 40.0%; n=75), ties it on GSM8K (81.1% on both; n=53, where 81% of
-> annotated rows are bypass and trivial-A is hard to beat), and falls
-> 6pp below trivial on BBH (61.4% vs 67.1%; n=70), reflecting the
-> probe-training subsample's GSM-skewed class distribution. The
-> probe-vs-judge held-out accuracy on the N=2,000 training set is
-> 78.1% at the same layer; the 11pp gap to probe-vs-human is
-> compositional with the judge-vs-human disagreement rate of 26.2%
-> measured in item 2.1."
 
 ## Files
 

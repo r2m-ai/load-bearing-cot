@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Build the camera-ready n=500 two-annotator human-annotation sample
-(revision item 2.6: n >= 500, two annotators, Cohen's kappa).
+Build the camera-ready n=500 two-annotator human-annotation sample (n >= 500, two annotators, Cohen's kappa).
 
-Upgrades over the rebuttal-stage n=200 package
+Upgrades over the earlier n=200 package
 (`data/annotations/pilot_n200/`):
 
-  1. TRUE M3 stratification. The n=200 sample predated item 2.0 and used
+  1. TRUE M3 stratification. The n=200 sample predated the judge-variant analysis and used
      `NEEDS_JUDGE -> resolved A/B` as a proxy for ambiguity. This sample
      stratifies directly on 4-variant LLM-judge agreement from
      `results/validation/judge_prompt_variants/stratification.json`:
@@ -14,7 +13,7 @@ Upgrades over the rebuttal-stage n=200 package
        - majority_3_1 : judge variants split 3-1   (mildly ambiguous)
        - agree        : all 4 variants agree       (calibration anchors)
   2. TYPE_C strata sampled from `expanded_pairs.json` (Type C was not
-     re-judged in exp_2_0). BBH Type C is oversampled because the n=200
+     the four-variant re-judging). BBH Type C is oversampled because the n=200
      study found the rule-based TYPE_C definition mis-labels genuine
      silent bypass as propagation on BBH (37.8% calibration).
   3. Two annotator files with identical rows, same `annotation_id`, but
@@ -106,7 +105,7 @@ def main():
     assert len(by_key) == len(pairs), "composite key not unique"
 
     strat = json.loads(STRATIFICATION.read_text())
-    # variant-agreement tier + per-variant labels for each exp_2_0 record
+    # variant-agreement tier + per-variant labels for each judge-variant record
     variant_info = {}
     for tier in ("agree", "majority_3_1", "split_2_2"):
         for e in strat[tier]:

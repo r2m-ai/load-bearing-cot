@@ -1,5 +1,5 @@
 """
-Script 9a (v5): Validate LLM judge on known TYPE_A and TYPE_B examples.
+Validate LLM judge on known TYPE_A and TYPE_B examples.
 
 Runs the judge prompt on examples already classified by the rule-based system
 to measure agreement. If agreement > 90%, the judge prompt is good enough
@@ -28,7 +28,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"9a_validate_judge_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"validate_judge_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )

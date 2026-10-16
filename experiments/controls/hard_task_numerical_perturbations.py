@@ -1,10 +1,10 @@
 """
-Script (revision Theme 1, items 1.3 + 1.2): Numerical perturbations on the
+Numerical perturbations on the
 "hard" datasets — the other half of the perturbation x difficulty 2x2.
 
-Reviewer DzAa #1 / y8FE #5: GSM8K used numerical perturbations, MMLU/BBH used
+Motivation: GSM8K used numerical perturbations, MMLU/BBH used
 textual ones, so the difficulty gradient is confounded with perturbation TYPE.
-exp_1_1 added the matched *textual* arm on GSM8K (easy + textual). This script
+controls/gsm8k_text_perturbations.py added the matched *textual* arm on GSM8K (easy + textual). This script
 adds the matched *numerical* arm on harder tasks:
 
   1.3 (robust)  : numerical perturbations on BBH COMPUTATIONAL subtasks
@@ -15,17 +15,17 @@ adds the matched *numerical* arm on harder tasks:
                   college_mathematics). Gated by an explicit feasibility probe
                   (--stage probe) — only run if numeric steps are extractable.
 
-Together with exp_1_1 this fills the 2x2:
-                 numerical            textual
-       easy      GSM8K (paper)        GSM8K (exp_1_1)
-       hard      THIS SCRIPT          MMLU/BBH (paper)
+Together with controls/gsm8k_text_perturbations.py this fills the 2x2:
+                 numerical         textual
+       easy      GSM8K (paper)     GSM8K (gsm8k_text_perturbations.py)
+       hard      THIS SCRIPT       MMLU/BBH (paper)
 
 The numerical strategies are the CANONICAL ones from the paper, loaded by path
 from experiments/pipeline/perturb_and_continue.py (perturb_gsm8k_arithmetic /
 perturb_gsm8k_operation) so they are identical to the GSM8K rows; a boolean
 operation-swap extension handles boolean_expressions (no +-*/ to swap). Same
-matched pipeline as exp_1_1: chat-template continuation, the real
-2b_subclassify, the real 9b judge. Output -> dedicated
+matched pipeline as controls/gsm8k_text_perturbations.py: chat-template continuation, the real
+pipeline/classify_behaviors.py, the real 9b judge. Output -> dedicated
 data/processed/confound_numerical_*.json; expanded_pairs.json untouched.
 
 Stages:
@@ -72,7 +72,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_1_3_confound_numerical_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"hard_task_numerical_perturbations_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -192,7 +192,7 @@ def load_targets(groups: list[str], max_baselines: int | None):
     return targets
 
 
-# ---- feasibility probe (item 1.2 gate; CPU, no model) ----
+# ---- feasibility probe (CPU, no model) ----
 
 def stage_probe():
     with open(IN_BASELINES) as f:
@@ -217,7 +217,7 @@ def stage_probe():
         return (has_num or has_op) if want_ops else has_num
 
     print("\n" + "=" * 64)
-    print("FEASIBILITY PROBE (item 1.2 gate)")
+    print("FEASIBILITY PROBE ()")
     print("=" * 64)
     print("BBH computational subtasks (1.3 — expected robust):")
     for task in BBH_COMPUTATIONAL:
@@ -241,11 +241,11 @@ def stage_probe():
         print("  1.2 GATE: PASS — include mmlu_numeric in --groups.")
     else:
         print("  1.2 GATE: PARTIAL — keep mmlu_numeric subjects that are OK only,")
-        print("  and report the descope explicitly in the response letter.")
+        print("  and report the descope explicitly.")
     print("=" * 64)
 
 
-# ---- continuation prompt (matched to exp_1_1 / Script 2) ----
+# ---- continuation prompt (matched to gsm8k_text_perturbations.py and pipeline/perturb_and_continue.py) ----
 
 def build_continuation_prompt(prompt: str, prefix: str, tokenizer) -> str:
     messages = [{"role": "user", "content": prompt},
@@ -329,9 +329,9 @@ def _norm_bool(x):
 
 
 def behavior_for(job, cont):
-    """Set behavior so that 2b_subclassify (classify_gsm8k for gsm8k, else
+    """Set behavior so that pipeline/classify_behaviors.py (classify_gsm8k for gsm8k, else
     classify_mmlu) produces matched A/B/C/NEEDS_JUDGE/UNCLEAR labels.
-    Lean to 'unclear' when uncertain so the 9b judge Pass-2 decides (exactly
+    Lean to 'unclear' when uncertain so the judge stage (pipeline/judge_behaviors.py) Pass-2 decides (exactly
     how the paper labelled BBH)."""
     src = job["source"]
     sub = job.get("bbh_subtask", "")
@@ -357,7 +357,7 @@ def behavior_for(job, cont):
     return ("self_corrects", True) if ok else ("propagates_error", False)
 
 
-# ---- model loading (shared shape with exp_1_1) ----
+# ---- model loading (shared shape with controls/gsm8k_text_perturbations.py) ----
 
 def load_model(no_vllm: bool):
     from transformers import AutoTokenizer
@@ -532,7 +532,7 @@ def _summary(records):
     print("NOTE: final A/B only after --stage judge.")
 
 
-# ---- judge stage (reuses 9b verbatim; matched to exp_1_1) ----
+# ---- judge stage (reuses pipeline/judge_behaviors.py verbatim; matched to controls/gsm8k_text_perturbations.py) ----
 
 def stage_judge(args):
     j9b = _load_module("pipeline/judge_behaviors.py", "judge_9b")
@@ -606,7 +606,7 @@ def _print_numerical_hard_diagnostic(pairs):
     clear = [p for p in pairs if p.get("label_3class") in
              ("silent_bypass", "self_correction", "error_propagation")]
     print("\n" + "=" * 64)
-    print("ITEM 1.3/1.2 — NUMERICAL PERTURBATIONS ON HARD TASKS")
+    print("NUMERICAL PERTURBATIONS ON HARD TASKS")
     print("=" * 64)
     grp = defaultdict(Counter)
     for p in clear:

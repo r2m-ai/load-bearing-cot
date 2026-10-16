@@ -1,5 +1,5 @@
 """
-Script 14: Cross-model validation pipeline on Llama-3.1-8B-Instruct.
+Cross-model validation pipeline on Llama-3.1-8B-Instruct.
 
 Full end-to-end pipeline in one script:
 1. Generate CoTs for GSM8K, MMLU, BBH (with Llama chat template)
@@ -1299,7 +1299,7 @@ def main():
     df = pd.DataFrame(probe_results)
 
     # Save probe results CSV
-    csv_path = FIGURES_DIR / "table_llama_probes.csv"
+    csv_path = FIGURES_DIR / "llama_probe_transfer.csv"
     df.to_csv(csv_path, index=False)
     logging.info(f"Saved probe results to {csv_path}")
 

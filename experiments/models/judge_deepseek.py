@@ -1,9 +1,9 @@
-"""exp_3_1_judge_deepseek.py — run the canonical judge stage on the DeepSeek
-exp_3_1 step3_subclassified.json file.
+"""Run the canonical judge stage on the DeepSeek
+models/deepseek.py step3_subclassified.json file.
 
 The DeepSeek pipeline (experiments/models/deepseek.py)
 stops at step 3 (rule-based subclassification). For the paper's
-load-bearing claim about C-vs-non-C invariance and for the §5.5
+load-bearing claim about C-vs-non-C invariance and for the
 cross-model table, we need judge-resolved A/B/C labels on the
 NEEDS_JUDGE records, the same way the main pipeline does
 (experiments/pipeline/judge_behaviors.py).
@@ -38,7 +38,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_3_1_judge_deepseek_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"judge_deepseek_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )

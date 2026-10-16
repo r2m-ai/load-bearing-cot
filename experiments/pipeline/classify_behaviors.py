@@ -1,5 +1,5 @@
 """
-Script 2b (v3): Sub-classify "unfaithful" examples into Type A / Type B.
+Sub-classify "unfaithful" examples into Type A / Type B.
 
 Type A (Silent Bypass): Model ignores the perturbed value entirely,
     uses the original value as if the perturbation didn't exist.
@@ -33,7 +33,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"2b_subclassify_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"classify_behaviors_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )

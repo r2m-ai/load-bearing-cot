@@ -1,10 +1,10 @@
 """
-Exp 3b: Perturbation uptake analysis (local, no GPU).
+Perturbation uptake analysis (local, no GPU).
 Checks whether continuations reference/reuse the perturbed value or claim.
 
 This is a text-matching analysis on existing continuations — no new generation needed.
 
-Outputs: results/robustness/exp3b_perturbation_uptake.json
+Outputs: results/validation/robustness/perturbation_uptake.json
 """
 
 import json
@@ -26,7 +26,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp3b_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"perturbation_uptake_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -204,7 +204,7 @@ def main():
         "label_summary": label_summary,
         "mmlu_subject_uptake": subj_summary,
     }
-    outpath = RESULTS / "exp3b_perturbation_uptake.json"
+    outpath = RESULTS / "perturbation_uptake.json"
     with open(outpath, "w") as f:
         json.dump(output, f, indent=2)
     logging.info(f"\nResults saved to {outpath}")

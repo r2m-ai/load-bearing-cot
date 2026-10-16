@@ -1,6 +1,6 @@
 """
-exp_2_3_probe_vs_human.py — probe-vs-human agreement on the n=200
-annotation subset (item 2.3, gated on item 2.1 human-label completion).
+Probe-vs-human agreement on the n=200
+annotation subset.
 
 What this script does:
   1. Loads the N=2,000 feature subset (extracted_features_42layers.npz)

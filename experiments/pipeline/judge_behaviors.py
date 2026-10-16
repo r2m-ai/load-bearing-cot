@@ -1,5 +1,5 @@
 """
-Script 9b (finalize_v1): LLM judge — fully optimized.
+LLM judge — fully optimized.
 
 Optimizations:
 - Async concurrent calls (20-50 parallel)
@@ -29,7 +29,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"9b_judge_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"judge_behaviors_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )

@@ -1,14 +1,14 @@
 """
-exp_1_5_variance_decomp.py — variance decomposition (Method Spec M1) for the
+Variance decomposition for the
 type × difficulty effect on error-propagation (C).
 
 Combines three label sources:
   1. data/processed/expanded_pairs.json
      — paper's main pipeline (Gemma-2-9B-IT, all strategies × all 3 datasets).
   2. data/processed/confound_gsm8k_text_labeled.json
-     — exp_1_1 (5 text strategies on GSM8K).
+     — controls/gsm8k_text_perturbations.py (5 text strategies on GSM8K).
   3. data/processed/confound_numerical_labeled.json
-     — exp_1_3 (numerical on BBH computational + MMLU numeric).
+     — controls/hard_task_numerical_perturbations.py (numerical on BBH computational + MMLU numeric).
 
 Model (logistic mixed-effects):
 
@@ -24,7 +24,7 @@ Model (logistic mixed-effects):
 
 Output: results/controls/variance_decomposition/
   - results.json   : full numeric output (deviance partition, coefs, CIs)
-  - summary.md     : human-readable summary for the response letter
+  - summary.md     : human-readable summary
 
 This is a CPU script; no GPU needed.
 """
@@ -54,7 +54,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_1_5_variance_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"variance_decomposition_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -408,7 +408,7 @@ def main() -> None:
 
 def render_md(s: dict) -> str:
     lines = [
-        "# Variance decomposition (item 1.5)",
+        "# Variance decomposition",
         "",
         f"n = {s['n_total']:,}",
         "",

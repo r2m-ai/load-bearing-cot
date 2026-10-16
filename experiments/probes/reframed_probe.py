@@ -1,5 +1,5 @@
 """
-Script 5b (v3): Reframed probe — classify behavior WITHIN perturbed examples.
+Reframed probe — classify behavior WITHIN perturbed examples.
 
 Instead of original-vs-perturbed (trivial surface difference), this probe asks:
 Given hidden states from the PERTURBED prefix, can we predict whether the model
@@ -12,7 +12,7 @@ encodes what the model will do next.
 Supports both 3-class (A/B/C) and binary (bypass vs non-bypass) modes.
 
 Input: data/processed/subclassified_pairs.json + hidden states
-Output: figures/figure4_reframed_probe.png, figures/table3_reframed.csv
+Output: figures/probe_reframed.png, figures/probe_reframed.csv
 """
 
 import json
@@ -239,7 +239,7 @@ def train_and_evaluate(X, y, groups=None, n_folds=5, use_pca=128):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Reframed probe (v3)")
+    parser = argparse.ArgumentParser(description="Reframed probe")
     parser.add_argument("--feature-mode", type=str, default="perturbation_point",
                         choices=["perturbation_point", "full"])
     parser.add_argument("--pca-dims", type=int, default=128)
@@ -367,8 +367,8 @@ def main():
     plt.suptitle(f"Reframed Probes: Classifying Model Behavior from Perturbed Representations\n"
                  f"(feature mode: {args.feature_mode})", fontsize=13)
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "figure4_reframed_probe.png", dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure4_reframed_probe.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "probe_reframed.png", dpi=300, bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "probe_reframed.pdf", bbox_inches="tight")
     print(f"\nSaved Figure 4")
 
     # ---- Table 3 ----
@@ -389,7 +389,7 @@ def main():
             })
 
     df = pd.DataFrame(rows)
-    df.to_csv(FIGURES_DIR / "table3_reframed.csv", index=False)
+    df.to_csv(FIGURES_DIR / "probe_reframed.csv", index=False)
     print(f"Saved Table 3")
 
     # Summary

@@ -1,10 +1,10 @@
 """
-exp_3_1_deepseek_crossmodel.py — DeepSeek-R1-Distill-Qwen-7B cross-model
-validation (revision Theme 3, item 3.1).
+DeepSeek-R1-Distill-Qwen-7B cross-model
+validation.
 
-Reviewers DzAa #3 + y8FE: replicate on a *reasoning-specialized* model to
+Motivation: replicate on a *reasoning-specialized* model to
 test whether the difficulty→faithfulness gradient is specific to
-instruction-tuned 8–9B models. Per researcher sign-off 2026-05-19, we use
+instruction-tuned 8–9B models. We use
 **DeepSeek-R1-Distill-Qwen-7B** (closer scale match to the 8–9B main models
 than the 1.5B distill; 7B distill is the compute driver).
 
@@ -13,15 +13,15 @@ the final answer. The cross-model pipeline therefore differs from
 `experiments/models/llama.py` in three load-bearing places — everywhere
 else (perturbation strategies, rule-based subclassifier, probe training,
 output formats) is matched verbatim by importing the canonical functions
-from script 14 by path. Differences:
+from models/llama.py by path. Differences:
 
   1. parse_deepseek_cot_steps : extract the *content of the first
-     `<think>…</think>` block* and parse it with script 14's
+     `<think>…</think>` block* and parse it with models/llama.py's
      `parse_cot_steps`. If the trace is unterminated (model ran out of
      tokens), we accept everything after `<think>` up to a soft cap.
 
   2. extract_*_answer (DeepSeek variants) : take the substring *after*
-     `</think>` (the post-think final-answer slab) and apply script 14's
+     `</think>` (the post-think final-answer slab) and apply models/llama.py's
      existing regexes there; fall back to `\\boxed{…}` if no `Answer:`
      line is present. R1 distills frequently use `\\boxed`.
 
@@ -37,10 +37,10 @@ Compute (rough budget on a single H100):
                                                 ~2–3 h (the compute driver).
   step 2 (perturbed continuations, ~9–14K jobs, ~768 new tokens):  ~2 h.
   step 3 rule-based / step 4 features / step 5 probes:             ~30–40 min.
-  Total ~5–6 h end-to-end. Sequence AFTER the confound result (item 1.1)
+  Total ~5–6 h end-to-end. Sequence AFTER the confound result
   is secured, per the within-P0-GPU priority order.
 
-Caveat to surface in §5.5 / §6.3 (Method Spec 3.5): DeepSeek-R1 is RL-
+Caveat to surface in the discussion: DeepSeek-R1 is RL-
 trained — Chen2025a found this regime to be *more* faithful than IT
 baselines — so `<think>`-block perturbation may not be 1-to-1 metric-
 comparable with Gemma-IT / Llama-IT. State this; do not paper over it.
@@ -102,7 +102,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_3_1_deepseek_{timestamp}.log"),
+        logging.FileHandler(LOG_DIR / f"deepseek_{timestamp}.log"),
         logging.StreamHandler(),
     ],
 )
@@ -123,7 +123,7 @@ CONT_MAX_NEW_TOKENS_BASE = 768
 CONT_MAX_NEW_TOKENS_CAP = 1024
 
 
-# ---- import script 14 by path (digit prefix prevents normal import) ----
+# ---- import models/llama.py by path (digit prefix prevents normal import) ----
 
 def _load_module(filename: str, modname: str):
     spec = importlib.util.spec_from_file_location(modname, SCRIPTS / filename)
@@ -132,7 +132,7 @@ def _load_module(filename: str, modname: str):
     return mod
 
 
-# Pull in canonical, well-tested helpers verbatim from script 14:
+# Pull in canonical, well-tested helpers verbatim from models/llama.py:
 #   parse_cot_steps             — step regex (universal, model-agnostic)
 #   format_gsm8k_prompt / format_mmlu_prompt / format_bbh_prompt
 #                               — prompt scaffolding (instruction style is
@@ -394,7 +394,7 @@ def _generate_batched_vllm(model, prompts, max_new_tokens, desc, tokenizer=None,
     outputs = model.generate(formatted, sp)
     # vLLM preserves submission order in the returned list, but the request_id
     # field is the canonical identifier; sort by it as a defensive measure
-    # (matches the exp_1_1 pattern).
+    # (matches the controls/gsm8k_text_perturbations.py pattern).
     outputs = sorted(outputs, key=lambda o: int(o.request_id))
     return [o.outputs[0].text.strip() for o in outputs]
 
@@ -796,7 +796,7 @@ def step2_create_perturbations(model, tokenizer, faithful_examples, args, is_vll
     return pairs
 
 
-# ---- step 3: rule-based subclassify (reuses script 14's classify_pair) ----
+# ---- step 3: rule-based subclassify (reuses models/llama.py's classify_pair) ----
 
 def step3_subclassify(pairs, args):
     checkpoint_path = MODEL_DIR / "step3_subclassified.json"
@@ -828,7 +828,7 @@ def step4_extract_features(model, tokenizer, pairs, args):
     Extract hidden states at the LAST token of the perturbed prefix
     (i.e., the token where the perturbed step ends and the model's
     continuation would begin) across all layers. This is the same anchor
-    point as script 14 — the absence of the `</think>` close tag means
+    point as models/llama.py — the absence of the `</think>` close tag means
     the model's hidden state still "sees" itself as mid-reasoning.
     """
     import torch
@@ -898,7 +898,7 @@ def step4_extract_features(model, tokenizer, pairs, args):
 
 def main():
     parser = argparse.ArgumentParser(
-        description=f"{MODEL_ID} cross-model validation (item 3.1)")
+        description=f"{MODEL_ID} cross-model validation")
     parser.add_argument("--max-examples", type=int, default=None,
                         help="Per-dataset cap for smoke runs")
     parser.add_argument("--batch-size", type=int, default=24,
@@ -1006,7 +1006,7 @@ def main():
             torch.cuda.empty_cache()
         logging.info("Freed GPU memory for probe training")
 
-    # Step 5 — reuse script 14's probe training verbatim (same metric reporting)
+    # Step 5 — reuse models/llama.py's probe training verbatim (same metric reporting)
     if not feature_data:
         logging.error("No features available -- cannot train probes")
         return

@@ -1,10 +1,10 @@
 """
-exp_2_0_judge_persistence.py — re-run 4 judge prompt variants on every
+Re-run 4 judge prompt variants on every
 non-Type-C example and persist (id, variant, judge_label) per row.
 
 Why: experiments/validation/judge_sensitivity.py only aggregates A/B distributions
-across variants. Method Spec M3 needs the per-example labels so the human
-annotation budget (item 2.1) can be stratified by agree vs disagree across
+across variants. The method specification needs the per-example labels so the human
+annotation budget can be stratified by agree vs disagree across
 the 4 variants — far more informative per annotation than a random sample.
 
 Outputs:
@@ -46,7 +46,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
     handlers=[
-        logging.FileHandler(LOG_DIR / f"exp_2_0_judge_{datetime.now():%Y%m%d_%H%M%S}.log"),
+        logging.FileHandler(LOG_DIR / f"judge_prompt_variants_{datetime.now():%Y%m%d_%H%M%S}.log"),
         logging.StreamHandler(),
     ],
 )

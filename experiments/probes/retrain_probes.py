@@ -1,5 +1,5 @@
 """
-Script 10b: Re-train probes locally using saved feature arrays.
+Re-train probes locally using saved feature arrays.
 
 No GPU needed — loads pre-extracted features from extracted_features_42layers.npz
 and re-reads labels from subclassified_pairs.json (which may have been updated
@@ -211,8 +211,8 @@ def main():
     plt.savefig(FIGURES_DIR / "layer_sweep_judged.png", dpi=300, bbox_inches="tight")
     print(f"\nSaved layer_sweep_judged.png")
 
-    df.to_csv(FIGURES_DIR / "table6_probe_judged.csv", index=False)
-    print(f"Saved table6_probe_judged.csv")
+    df.to_csv(FIGURES_DIR / "probe_layer_sweep.csv", index=False)
+    print(f"Saved probe_layer_sweep.csv")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 """
-Script 4: Logit Lens Analysis — Figure 1.
+Logit-lens baseline analysis.
 
 For each example, projects hidden states through the LM head at each
 token position and layer to see when the model "decides" the answer.
@@ -9,7 +9,7 @@ Optimizations vs original:
 - Batch multiple examples on GPU
 - Keep lm_head row vector on GPU, stream hidden states in batches
 
-Output: figures/figure1_logit_lens.png
+Output: figures/logit_lens.png
 """
 
 import json
@@ -206,9 +206,9 @@ def main():
     ax.legend(loc="lower right", frameon=True)
 
     plt.tight_layout()
-    fig_path = FIGURES_DIR / "figure1_logit_lens.png"
+    fig_path = FIGURES_DIR / "logit_lens.png"
     plt.savefig(fig_path, dpi=300, bbox_inches="tight")
-    plt.savefig(FIGURES_DIR / "figure1_logit_lens.pdf", bbox_inches="tight")
+    plt.savefig(FIGURES_DIR / "logit_lens.pdf", bbox_inches="tight")
     print(f"\nSaved Figure 1 to {fig_path}")
 
     # Save raw data
