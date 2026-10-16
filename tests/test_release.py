@@ -108,11 +108,11 @@ class LayoutTests(unittest.TestCase):
 
 
 class CLITests(unittest.TestCase):
-    def invoke(self, directory, backend):
+    def invoke(self, directory, backend, extra=()):
         source = Path(directory) / 'input.jsonl'
         source.write_text(json.dumps(dict(id='q', question='Q', reference_answer='24')) + '\n')
         output = Path(directory) / 'run'
-        args = ['evaluate.py', '--model', 'fake', '--dataset', 'gsm8k', '--input-file', str(source), '--output-dir', str(output)]
+        args = ['evaluate.py', '--model', 'fake', '--dataset', 'gsm8k', '--input-file', str(source), '--output-dir', str(output), *extra]
         with patch('sys.argv', args), patch.object(evaluate, 'VLLMBackend', return_value=backend), \
              patch.object(evaluate.importlib.metadata, 'version', return_value='test'), \
              contextlib.redirect_stdout(io.StringIO()):
@@ -126,6 +126,21 @@ class CLITests(unittest.TestCase):
             self.assertEqual((output / 'interventions.jsonl').read_text(), '')
             self.assertEqual(json.loads((output / 'summary.json').read_text())['status'], 'insufficient_data')
             self.assertIn('finished_at', json.loads((output / 'manifest.json').read_text()))
+
+    def test_reasoning_tags_are_recorded_and_validated(self):
+        backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'), generate=lambda requests: ['Answer: 99'])
+        with tempfile.TemporaryDirectory() as directory:
+            output = self.invoke(directory, backend)
+            self.assertEqual(json.loads((output / 'manifest.json').read_text())['reasoning_tags'], ['<think>', '</think>'])
+        with tempfile.TemporaryDirectory() as directory:
+            output = self.invoke(directory, backend, ['--reasoning-tags', '<r>,</r>'])
+            manifest = json.loads((output / 'manifest.json').read_text())
+            self.assertEqual(manifest['reasoning_tags'], ['<r>', '</r>'])
+            self.assertEqual(manifest['arguments']['reasoning_tags'], '<r>,</r>')
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+                self.invoke(directory, backend, ['--reasoning-tags', '<r>'])
+            self.assertFalse((Path(directory) / 'run').exists())
 
     def test_existing_output_dir_is_a_usage_error(self):
         backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'), generate=lambda requests: ['Answer: 99'])

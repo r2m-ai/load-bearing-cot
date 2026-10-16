@@ -10,6 +10,34 @@ from decimal import Decimal, InvalidOperation
 # the next reasoning line. Accept the common Markdown bold label as well.
 ANSWER_LINE = re.compile(r"(?im)^[ \t]*(?:\*\*)?(?:final[ \t]+)?answer:(?:\*\*)?[ \t]*([^\r\n]*)")
 NUMBER = r"[+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
+# Reasoning-block delimiters. Models with other markers name theirs with
+# --reasoning-tags; the pair used is recorded in the manifest.
+REASONING = ("<think>", "</think>")
+
+
+def parse_reasoning_tags(value):
+    """'OPEN,CLOSE' -> (OPEN, CLOSE); both nonempty and distinct."""
+    if isinstance(value, (tuple, list)):
+        parts = [str(part) for part in value]
+    else:
+        parts = str(value).split(",")
+    if len(parts) != 2 or not all(part.strip() for part in parts) or parts[0] == parts[1]:
+        raise ValueError("reasoning tags must be two distinct nonempty markers: OPEN,CLOSE")
+    return (parts[0], parts[1])
+
+
+def unclosed_reasoning(text, tags=REASONING):
+    """True when a reasoning block is opened and never closed."""
+    open_tag, close_tag = tags
+    return open_tag in text and close_tag not in text
+
+
+def visible_offset(text, tags=REASONING):
+    """Where the visible rationale starts; None when a reasoning block is unclosed."""
+    open_tag, close_tag = tags
+    if close_tag in text:
+        return text.rindex(close_tag) + len(close_tag)
+    return None if open_tag in text else 0
 
 
 def normalize_text_answer(answer):
@@ -50,13 +78,13 @@ def correct_text(answer, reference):
     return normalize_text_answer(answer) == normalize_text_answer(reference)
 
 
-def extract_answer(text, dataset):
+def extract_answer(text, dataset, tags=REASONING):
     # Score the final explicit answer, not numbers mentioned in the reasoning.
     from .datasets import adapter  # the registry imports this module's contracts
-    if "<think>" in text and "</think>" not in text:
+    offset = visible_offset(text, tags)
+    if offset is None:
         return None
-    text = text.rsplit("</think>", 1)[-1]
-    matches = ANSWER_LINE.findall(text)
+    matches = ANSWER_LINE.findall(text[offset:])
     if not matches:
         return None
     answer = matches[-1].strip().strip("*").strip()
@@ -70,12 +98,10 @@ def correct(answer, reference, dataset):
     return adapter(dataset).correct(answer, reference)
 
 
-def step_spans(response):
+def step_spans(response, tags=REASONING):
     """Find visible reasoning lines without rewriting the original prefix."""
-    offset = 0
-    if "</think>" in response:
-        offset = response.index("</think>") + len("</think>")
-    elif "<think>" in response:
+    offset = visible_offset(response, tags)
+    if offset is None:
         return []
     spans = []
     for line in response[offset:].splitlines(keepends=True):
@@ -89,9 +115,9 @@ def step_spans(response):
     return spans
 
 
-def reasoning_steps(response):
+def reasoning_steps(response, tags=REASONING):
     """Return preserved preamble and visible lines, for inspection."""
-    spans = step_spans(response)
+    spans = step_spans(response, tags)
     preamble = response[:spans[0][0]] if spans else ""
     return preamble, [response[start:end] for start, end, _ in spans]
 
@@ -115,8 +141,8 @@ def perturb(step, strategy):
     raise ValueError(f"Unknown strategy: {strategy}")
 
 
-def interventions(response, strategy):
-    spans = step_spans(response)
+def interventions(response, strategy, tags=REASONING):
+    spans = step_spans(response, tags)
     if len(spans) < 3:
         return []
     result = []

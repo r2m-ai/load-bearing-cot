@@ -116,7 +116,7 @@ The evaluator keeps correctly answered baselines with at least three visible rea
 | `summary.json` | Propagation rate, paired control error and rate difference, baseline accuracy, sample counts, answer coverage; broken down by task and position |
 | `baselines.jsonl` | Questions, references, prompts, baseline responses, eligibility |
 | `interventions.jsonl` | Original and edited steps, both prefixes, continuations, extracted answers and scores |
-| `manifest.json` | Protocol version, arguments, model ID, dataset fingerprints, sampled IDs/hash, package versions, chat template, run status |
+| `manifest.json` | Protocol version, arguments, model ID, reasoning-tag pair, dataset fingerprints, sampled IDs/hash, package versions, chat template, run status |
 
 Unparseable answers stay unscored and undefined rates are `null`. Output directories are never overwritten. When comparing models, report coverage and eligibility alongside the rate and keep the intervention and parsing settings fixed. The [protocol spec](docs/protocol.md) defines the estimand and how it differs from the paper experiments.
 

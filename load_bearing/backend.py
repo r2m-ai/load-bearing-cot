@@ -1,4 +1,5 @@
 """Local vLLM backend with literal assistant-prefix continuation."""
+from .protocol import REASONING, parse_reasoning_tags
 
 MODEL_ALIASES = {
     "gemma-2-9b-it": "google/gemma-2-9b-it",
@@ -7,11 +8,25 @@ MODEL_ALIASES = {
     "qwen2.5-7b-instruct": "Qwen/Qwen2.5-7B-Instruct",
 }
 
+# Reasoning delimiters by resolved model ID, for models whose chat template
+# uses a pair other than the default. An entry is a convenience, not a
+# validation of that model's reasoning format; --reasoning-tags overrides it.
+MODEL_REASONING_TAGS = {
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B": REASONING,
+}
+
+
+def reasoning_tags_for(model_id, explicit=None):
+    if explicit is not None:
+        return parse_reasoning_tags(explicit)
+    return MODEL_REASONING_TAGS.get(model_id, REASONING)
+
 
 class VLLMBackend:
     def __init__(self, args):
         from vllm import LLM, SamplingParams
         self.model_id = MODEL_ALIASES.get(args.model, args.model)
+        self.reasoning = reasoning_tags_for(self.model_id, getattr(args, "reasoning_tags", None))
         self.model = LLM(model=self.model_id, revision=args.model_revision,
                          tokenizer_revision=args.model_revision,
                          tensor_parallel_size=args.tensor_parallel_size,
@@ -25,6 +40,7 @@ class VLLMBackend:
     def generate(self, requests):
         """requests: (user prompt, assistant prefix); no follow-up user turn."""
         from vllm.inputs import TokensPrompt
+        open_tag, close_tag = self.reasoning
         prompts, open_thinking = [], []
         for prompt, prefix in requests:
             formatted = self.tokenizer.apply_chat_template(
@@ -34,7 +50,7 @@ class VLLMBackend:
             if len(ids) + self.params.max_tokens > self.max_length:
                 raise ValueError("Prefix plus generation budget exceeds model context; reduce --max-new-tokens")
             prompts.append(TokensPrompt(prompt_token_ids=ids))
-            open_thinking.append(not prefix and formatted.rfind("<think>") > formatted.rfind("</think>"))
+            open_thinking.append(not prefix and formatted.rfind(open_tag) > formatted.rfind(close_tag))
         if not prompts:
             return []
         outputs = self.model.generate(prompts, self.params)
@@ -49,9 +65,9 @@ class VLLMBackend:
             for token in (self.tokenizer.eos_token, "<|eot_id|>", "<end_of_turn>"):
                 if token and text.endswith(token):
                     text = text[:-len(token)]
-            # Some templates open <think> themselves. An unfinished generation
-            # must still be rejected by the visible-rationale eligibility gate.
-            if opened and "</think>" not in text:
-                text = "<think>" + text
+            # Some templates open the reasoning block themselves. An unfinished
+            # generation must still be rejected by the eligibility gate.
+            if opened and close_tag not in text:
+                text = open_tag + text
             texts.append(text)
         return texts

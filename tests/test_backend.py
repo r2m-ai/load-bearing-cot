@@ -4,13 +4,14 @@ from types import ModuleType, SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from load_bearing.backend import VLLMBackend
-from load_bearing.protocol import reasoning_steps
+from load_bearing.backend import MODEL_REASONING_TAGS, VLLMBackend, reasoning_tags_for
+from load_bearing.protocol import REASONING, reasoning_steps
 
 
 class BackendTests(unittest.TestCase):
-    def backend(self, template="USER:Q\nASSISTANT:"):
+    def backend(self, template="USER:Q\nASSISTANT:", reasoning=REASONING):
         backend = VLLMBackend.__new__(VLLMBackend)
+        backend.reasoning = reasoning
         backend.params = SimpleNamespace(max_tokens=10)
         backend.max_length = 1000
         class Tokenizer:
@@ -55,6 +56,24 @@ class BackendTests(unittest.TestCase):
     def test_template_opened_unfinished_thinking_is_ineligible(self):
         text = self.backend("USER:Q\nASSISTANT:<think>\n").generate([("Q", "")])[0]
         self.assertEqual(reasoning_steps(text)[1], [])
+
+    def test_template_opened_custom_tags_are_closed_with_the_same_pair(self):
+        tags = ("<reasoning>", "</reasoning>")
+        text = self.backend("USER:Q\nASSISTANT:<reasoning>\n", tags).generate([("Q", "")])[0]
+        self.assertTrue(text.startswith("<reasoning>"))
+        self.assertEqual(reasoning_steps(text, tags)[1], [])
+        # The default pair does not see a block at all, so the same text would
+        # be read as plain visible steps: that is the silent path --reasoning-tags closes.
+        self.assertEqual(reasoning_steps(text)[1], ["<reasoning>Answer: 0"])
+
+    def test_reasoning_tags_resolution(self):
+        self.assertEqual(reasoning_tags_for("unknown/model"), REASONING)
+        self.assertEqual(reasoning_tags_for("unknown/model", "<r>,</r>"), ("<r>", "</r>"))
+        for model_id, tags in MODEL_REASONING_TAGS.items():
+            self.assertEqual(reasoning_tags_for(model_id), tags)
+        for bad in ("<r>", "<r>,<r>", ",</r>"):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                reasoning_tags_for("unknown/model", bad)
 
     def test_empty_batch(self):
         self.assertEqual(self.backend().generate([]), [])

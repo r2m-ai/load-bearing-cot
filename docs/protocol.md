@@ -22,7 +22,7 @@ paired_error_rate_difference = mean_P[wrong(perturbed) - wrong(control)]
 
 `control_error_rate` uses the same paired set `P`. A negative difference is allowed. Undefined quantities are `null`; zero scored continuations produces `status: insufficient_data`. The binary error proxy does not establish uptake of the injected content. No A/B judge is used.
 
-Report baseline accuracy, baseline parse failures, eligible-question count, intervention count and answer coverage alongside the metric. Baseline accuracy counts an unparseable baseline as unsuccessful; perturbation scores instead exclude unparseable answers and expose their count. Missingness may be model-dependent, so coverage is essential to interpretation.
+Report baseline accuracy, baseline parse failures, unclosed-reasoning count, eligible-question count, intervention count and answer coverage alongside the metric. Baseline accuracy counts an unparseable baseline as unsuccessful; perturbation scores instead exclude unparseable answers and expose their count. Missingness may be model-dependent, so coverage is essential to interpretation.
 
 Three positions share a question, and short traces can map multiple positions to the same line. Overall scores weight generated interventions equally, not questions equally. Do not treat these observations as independent trials; uncertainty estimates should resample at question level. This entry point does not yet compute confidence intervals or a leaderboard ranking.
 
@@ -37,7 +37,7 @@ Three positions share a question, and short traces can map multiple positions to
 | Prompt | Explicit step-by-step reasoning with one step per line and `Answer:` on its own line |
 | Decoding | Greedy, 4,096 new tokens by default in each condition |
 | Steps | Nonempty lines before the first explicit final-answer line; original whitespace is preserved in both prefixes |
-| Reasoning tags | With `</think>`, retain the entire thinking preamble and intervene only on the visible rationale after it; an unclosed `<think>` is ineligible |
+| Reasoning tags | Default pair `<think>`/`</think>`; `--reasoning-tags OPEN,CLOSE` names another pair and the manifest records the pair used. Retain everything through the last close tag and intervene only on the visible rationale after it; an unclosed block is ineligible and unparseable. If every baseline leaves the block open (checked after 5 baselines and at the end), the run fails with a message naming the flag instead of scoring rows as unparseable |
 | Position | `min(n_steps - 2, floor(n_steps × fraction))`, zero-based; fractions 0.25, 0.50, 0.75 |
 | Arithmetic edit | First numeric value after any step number becomes `2n + 3`; use `n + 1` if unchanged; skip lines without a number |
 | Contradiction edit | Prefix the step's content with `The following claim is false:` |
@@ -48,13 +48,13 @@ Three positions share a question, and short traces can map multiple positions to
 
 The contradiction intervention is a standardized textual negation, not a semantic verifier; inspect traces to check its suitability for a task. BBH uses exact normalized string matching, without the historical prefix-matching heuristic. Formatting variation may lower measured accuracy or coverage. Do not silently change parsers between model runs.
 
-For reasoning-tag models, the retained thinking preamble may already contain a solution. This measures dependence on the **post-thinking visible rationale**, not dependence on the internal thinking trace. Newer models with different reasoning delimiters need an explicit adapter and protocol review; accepting a model ID does not validate that model's reasoning format.
+For reasoning-tag models, the retained thinking preamble may already contain a solution. This measures dependence on the **post-thinking visible rationale**, not dependence on the internal thinking trace. Models with different reasoning delimiters name them with `--reasoning-tags OPEN,CLOSE` (or an entry in `MODEL_REASONING_TAGS` in `load_bearing/backend.py` keyed by resolved model ID); the backend uses the same pair to detect a template-opened block, the parser uses it to find the visible rationale, and `summary.json` reports `n_baseline_unclosed_reasoning`. Delimiters are not guessed from the chat template. A model whose markers are not named is read as having no reasoning block, so its preamble would be edited as visible steps; accepting a model ID does not validate that model's reasoning format.
 
 The backend uses [vLLM token prompts](https://docs.vllm.ai/en/latest/api/vllm/inputs/) to continue an assistant prefix without introducing a follow-up user turn. Models with no chat template or incompatible architectures fail rather than silently using a different protocol.
 
 ## Reproducibility and artifacts
 
-Supply `--model-revision` and `--dataset-revision` with commit hashes when publishing a run. Default upstream revisions can change. The manifest records these arguments, package versions, dataset fingerprints, the sampled IDs and content hash, the chat template, and the repository commit/dirty state. A manifest without pinned revisions is useful provenance, not an exact environment lock.
+Supply `--model-revision` and `--dataset-revision` with commit hashes when publishing a run. Default upstream revisions can change. The manifest records these arguments, the reasoning-tag pair, package versions, dataset fingerprints, the sampled IDs and content hash, the chat template, and the repository commit/dirty state. A manifest without pinned revisions is useful provenance, not an exact environment lock.
 
 `baselines.jsonl` records every sampled question, including incorrect and unparseable baselines. `interventions.jsonl` records every attempted valid edit and both continuation outcomes. Each row carries the base question ID for grouped analysis. Baseline records are appended before continuation generation, and intervention records after paired generations complete; interrupted partial questions are not resumable automatically. Keyboard interruption is recorded as `interrupted` in the manifest; both JSONL files exist even when no interventions qualify. Choose a new output directory for a retry.
 

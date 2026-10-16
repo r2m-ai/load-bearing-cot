@@ -7,7 +7,8 @@ import unittest
 
 from evaluate import run
 from load_bearing.datasets import load_examples
-from load_bearing.protocol import correct, extract_answer, interventions, perturb, reasoning_steps, summarize
+from load_bearing.protocol import (REASONING, correct, extract_answer, interventions, perturb, reasoning_steps,
+                                   summarize, unclosed_reasoning)
 
 TRACE = '1. There are 4 rows.\n2. Each row has 6 items.\n3. Multiply 4 by 6 to obtain 24.\n4. The total is 24.\nAnswer: 24'
 
@@ -57,6 +58,50 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(extract_answer(thinking + 'Answer: 24', 'gsm8k'), '24')
         self.assertEqual(reasoning_steps('<think>unfinished\n' + TRACE)[1], [])
         self.assertIsNone(extract_answer('<think>unfinished\nAnswer: 24', 'gsm8k'))
+
+    def test_non_default_reasoning_tags(self):
+        tags = ('<reasoning>', '</reasoning>')
+        thinking = '<reasoning>Answer: 999\nscratch</reasoning>\n'
+        edits = interventions(thinking + TRACE, 'arithmetic', tags)
+        self.assertEqual(len(edits), 3)
+        self.assertTrue(all(e['prefix'].startswith(thinking) for e in edits))
+        self.assertEqual(extract_answer(thinking + 'Answer: 24', 'gsm8k', tags), '24')
+        self.assertIsNone(extract_answer('<reasoning>unfinished\nAnswer: 24', 'gsm8k', tags))
+        self.assertEqual(reasoning_steps('<reasoning>unfinished\n' + TRACE, tags)[1], [])
+        # Under the default pair the preamble is not recognized: its lines count
+        # as visible steps and the scratch answer is scored. Name the tags instead.
+        self.assertEqual(extract_answer(thinking + 'Answer: 24', 'gsm8k'), '24')
+        self.assertEqual(reasoning_steps(thinking + TRACE)[1][0], '<reasoning>Answer: 999')
+        self.assertTrue(unclosed_reasoning('<reasoning>x', tags))
+        self.assertFalse(unclosed_reasoning('<reasoning>x', REASONING))
+
+    def test_run_fails_loudly_when_every_baseline_leaves_reasoning_open(self):
+        class Backend:
+            def generate(self, requests):
+                return ['<think>still thinking ' + str(len(requests))]
+        examples = [dict(id=f'q{i}', question='Q', reference_answer='24') for i in range(6)]
+        with contextlib.redirect_stdout(io.StringIO()), \
+             self.assertRaisesRegex(ValueError, 'opened .* without closing'):
+            run(examples, 'gsm8k', Backend(), 'arithmetic', lambda *args: None)
+        with contextlib.redirect_stdout(io.StringIO()), \
+             self.assertRaisesRegex(ValueError, 'opened .* without closing'):
+            run(examples[:2], 'gsm8k', Backend(), 'arithmetic', lambda *args: None)
+
+    def test_occasional_unclosed_reasoning_is_counted_not_fatal(self):
+        class Backend:
+            def __init__(self):
+                self.calls = 0
+            def generate(self, requests):
+                if requests[0][1] != '':
+                    return ['Answer: 24'] * len(requests)
+                self.calls += 1
+                return ['<think>truncated'] if self.calls % 2 else ['<think>t</think>\n' + TRACE]
+        examples = [dict(id=f'q{i}', question='Q', reference_answer='24') for i in range(4)]
+        with contextlib.redirect_stdout(io.StringIO()):
+            result = run(examples, 'gsm8k', Backend(), 'arithmetic', lambda *args: None)
+        self.assertEqual(result['n_baseline_unclosed_reasoning'], 2)
+        self.assertEqual(result['n_baseline_unparsed'], 2)
+        self.assertEqual(result['n_eligible_questions'], 2)
 
     def test_short_trace_ineligible(self):
         self.assertEqual(interventions('One line 2\nAnswer: 2', 'arithmetic'), [])
