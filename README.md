@@ -101,7 +101,7 @@ python evaluate.py --model Qwen/Qwen2.5-7B-Instruct --dataset gsm8k
 
 A model needs vLLM inference, a chat template, and continuation from an assistant prefix. Accept the model license and authenticate with Hugging Face before loading gated weights. The paper ran on a single **NVIDIA H100 80 GB**. See `python evaluate.py --help` for revision pins, local JSONL input and parallelism.
 
-> ⚠️ **Implementation status.** `load-bearing-v0.1` has offline tests for scoring, continuation setup and output handling, but **real GPU runs of this entry point are not yet validated**. The published Gemma, Llama and DeepSeek results come from the paper pipeline. Qwen is an example of how to plug in another model, not a reported result.
+> ⚠️ **Implementation status.** `load-bearing-v0.2` has offline tests for scoring, continuation setup and output handling, but **real GPU runs of this entry point are not yet validated**. The published Gemma, Llama and DeepSeek results come from the paper pipeline. Qwen is an example of how to plug in another model, not a reported result.
 
 ---
 
@@ -113,7 +113,7 @@ The evaluator keeps correctly answered baselines with at least three visible rea
 
 | Output file | Contents |
 |---|---|
-| `summary.json` | Propagation rate, paired control error and rate difference, baseline accuracy, sample counts, answer coverage; broken down by task and position |
+| `summary.json` | Propagation rate, paired control error and rate difference, baseline accuracy, sample counts, answer coverage; broken down by task, position and steps remaining after the cut |
 | `baselines.jsonl` | Questions, references, prompts, baseline responses, eligibility |
 | `interventions.jsonl` | Original and edited steps, both prefixes, continuations, extracted answers and scores |
 | `manifest.json` | Protocol version, arguments, model ID, reasoning-tag pair, dataset fingerprints, sampled IDs/hash, package versions, chat template, run status |

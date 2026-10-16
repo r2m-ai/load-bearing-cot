@@ -12,8 +12,8 @@ import subprocess
 from load_bearing import PROTOCOL_VERSION
 from load_bearing.backend import MODEL_ALIASES, VLLMBackend, reasoning_tags_for
 from load_bearing.datasets import DATASETS, format_prompt, load_examples
-from load_bearing.protocol import (REASONING, correct, extract_answer, interventions, parse_reasoning_tags,
-                                   summarize, unclosed_reasoning)
+from load_bearing.protocol import (MIN_STEPS, POSITIONS, REASONING, correct, extract_answer, interventions,
+                                   parse_reasoning_tags, position_indices, step_spans, summarize, unclosed_reasoning)
 
 # After this many baselines that all open a reasoning block without closing
 # it, the delimiters are wrong for this model; stop instead of scoring every
@@ -41,7 +41,10 @@ def run(examples, dataset, backend, strategy, record, tags=REASONING):
                         correct=correct(answer, example["reference_answer"], dataset),
                         reasoning_unclosed=unclosed_reasoning(response, tags))
         edits = interventions(response, strategy, tags) if baseline["correct"] is True else []
-        baseline["n_interventions"] = len(edits)
+        n_steps = len(step_spans(response, tags))
+        baseline.update(n_steps=n_steps, n_interventions=len(edits),
+                        n_positions_collapsed=(len(POSITIONS) - len(position_indices(n_steps))
+                                               if edits else 0))
         baselines.append(baseline)
         record("baselines", baseline)
         check_reasoning_format(baselines, tags)
@@ -66,9 +69,12 @@ def run(examples, dataset, backend, strategy, record, tags=REASONING):
                   n_baseline_correct=sum(b["correct"] is True for b in baselines),
                   n_baseline_unparsed=sum(b["answer"] is None for b in baselines),
                   n_baseline_unclosed_reasoning=sum(b["reasoning_unclosed"] for b in baselines),
-                  n_eligible_questions=sum(b["n_interventions"] > 0 for b in baselines))
+                  n_eligible_questions=sum(b["n_interventions"] > 0 for b in baselines),
+                  n_coincident_positions_skipped=sum(b["n_positions_collapsed"] for b in baselines))
     report["baseline_accuracy"] = report["n_baseline_correct"] / len(examples) if examples else None
-    report["by_position"] = {p: summarize([r for r in rows if r["position"] == p]) for p in ("early", "middle", "late")}
+    report["by_position"] = {p: summarize([r for r in rows if r["position"] == p]) for p, _ in POSITIONS}
+    report["by_remaining_steps"] = {k: summarize([r for r in rows if r["n_steps_after_cut"] == k])
+                                    for k in sorted({r["n_steps_after_cut"] for r in rows})}
     report["by_task"] = {task: summarize([r for r in rows if r["task"] == task]) for task in sorted({r["task"] for r in rows})}
     report["status"] = "ok" if report["n_scored"] else "insufficient_data"
     return report

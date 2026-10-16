@@ -7,8 +7,8 @@ import unittest
 
 from evaluate import run
 from load_bearing.datasets import load_examples
-from load_bearing.protocol import (REASONING, correct, extract_answer, interventions, perturb, reasoning_steps,
-                                   summarize, unclosed_reasoning)
+from load_bearing.protocol import (REASONING, correct, extract_answer, interventions, perturb, position_indices,
+                                   reasoning_steps, summarize, unclosed_reasoning)
 
 TRACE = '1. There are 4 rows.\n2. Each row has 6 items.\n3. Multiply 4 by 6 to obtain 24.\n4. The total is 24.\nAnswer: 24'
 
@@ -44,7 +44,8 @@ class ProtocolTests(unittest.TestCase):
 
     def test_truncation_and_control(self):
         edits = interventions(TRACE, 'arithmetic')
-        self.assertEqual(len(edits), 3)
+        # Four steps: early=1, middle=2, late would also be 2 and is skipped.
+        self.assertEqual([e['position'] for e in edits], ['early', 'middle'])
         for edit in edits:
             self.assertNotIn('Answer:', edit['prefix'])
             self.assertNotIn('The total', edit['prefix'])
@@ -63,7 +64,7 @@ class ProtocolTests(unittest.TestCase):
         tags = ('<reasoning>', '</reasoning>')
         thinking = '<reasoning>Answer: 999\nscratch</reasoning>\n'
         edits = interventions(thinking + TRACE, 'arithmetic', tags)
-        self.assertEqual(len(edits), 3)
+        self.assertEqual([e['position'] for e in edits], ['early', 'middle'])
         self.assertTrue(all(e['prefix'].startswith(thinking) for e in edits))
         self.assertEqual(extract_answer(thinking + 'Answer: 24', 'gsm8k', tags), '24')
         self.assertIsNone(extract_answer('<reasoning>unfinished\nAnswer: 24', 'gsm8k', tags))
@@ -106,6 +107,37 @@ class ProtocolTests(unittest.TestCase):
     def test_short_trace_ineligible(self):
         self.assertEqual(interventions('One line 2\nAnswer: 2', 'arithmetic'), [])
 
+    def test_coincident_positions_are_not_duplicated(self):
+        def trace(n):
+            return ''.join(f'{i+1}. Step number {i+1} uses {i+1} items.\n' for i in range(n)) + 'Answer: 24'
+        self.assertEqual(position_indices(3), [('early', 0), ('middle', 1)])
+        self.assertEqual(position_indices(4), [('early', 1), ('middle', 2)])
+        self.assertEqual(position_indices(5), [('early', 1), ('middle', 2), ('late', 3)])
+        for n in (3, 4, 5, 8):
+            edits = interventions(trace(n), 'arithmetic')
+            keys = {(e['step_index'], e['prefix'], e['control_prefix']) for e in edits}
+            with self.subTest(n=n):
+                self.assertEqual(len(keys), len(edits))
+                for edit in edits:
+                    self.assertEqual(edit['n_steps_total'], n)
+                    self.assertEqual(edit['n_steps_after_cut'], n - edit['step_index'] - 1)
+                    self.assertGreaterEqual(edit['n_steps_after_cut'], 1)
+
+    def test_mid_chain_answer_line_does_not_end_the_rationale(self):
+        trace = ('1. There are 4 rows.\n2. Each row has 6 items.\n'
+                 'Answer: not sure yet, let me redo step 3.\n'
+                 '3. Multiply 4 by 6 to obtain 24.\n4. The total is 24.\nAnswer: 24')
+        self.assertEqual(extract_answer(trace, 'gsm8k'), '24')
+        _, steps = reasoning_steps(trace)
+        # Scoring and step finding now agree on where the rationale ends; the
+        # tentative answer line stays in the prefix but is not an editable step.
+        self.assertEqual(len(steps), 4)
+        self.assertNotIn('Answer: not sure', steps)
+        edits = interventions(trace, 'arithmetic')
+        self.assertEqual(len(edits), 2)
+        self.assertTrue(all('Answer: 24' not in e['prefix'] for e in edits))
+        self.assertIn('Answer: not sure yet', edits[1]['prefix'])
+
     def test_denominators_and_unknowns(self):
         rows = [dict(perturbed_correct=False, control_correct=True),
                 dict(perturbed_correct=True, control_correct=None),
@@ -142,8 +174,13 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(result['n_eligible_questions'], 1)
         self.assertEqual(result['error_propagation_rate'], 1)
         self.assertEqual(result['control_error_rate'], 0)
-        self.assertEqual(len(backend.requests), 7)
-        self.assertEqual(len(records), 4)
+        # One baseline plus two distinct interventions x two conditions.
+        self.assertEqual(len(backend.requests), 5)
+        self.assertEqual(len(records), 3)
+        self.assertEqual(result['n_coincident_positions_skipped'], 1)
+        self.assertEqual(result['by_position']['late']['n_interventions'], 0)
+        self.assertEqual(sorted(result['by_remaining_steps']), [1, 2])
+        self.assertEqual(result['by_remaining_steps'][2]['n_interventions'], 1)
 
     def test_incorrect_baseline_never_intervened(self):
         class Backend:

@@ -7,7 +7,7 @@ abstract: >-
   testing: an ablation-patch intervention that perturbs one reasoning step,
   truncates the chain, and forces the model to continue, measuring how tightly
   a written chain-of-thought constrains the answer it precedes.
-version: "load-bearing-v0.1"
+version: "load-bearing-v0.2"
 date-released: 2026-09-19
 authors:
   - family-names: Jia

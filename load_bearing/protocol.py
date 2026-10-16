@@ -103,11 +103,13 @@ def step_spans(response, tags=REASONING):
     offset = visible_offset(response, tags)
     if offset is None:
         return []
+    lines = response[offset:].splitlines(keepends=True)
+    # The rationale ends at the last explicit answer line, the same line that
+    # scoring reads. Earlier answer lines stay in the prefix but are not steps.
+    end = max((i for i, line in enumerate(lines) if ANSWER_LINE.match(line)), default=len(lines))
     spans = []
-    for line in response[offset:].splitlines(keepends=True):
-        if ANSWER_LINE.match(line):
-            break
-        if line.strip():
+    for line in lines[:end]:
+        if line.strip() and not ANSWER_LINE.match(line):
             # Exclude the newline from the edit, preserve it in the prefix.
             content_end = offset + len(line.rstrip("\r\n"))
             spans.append((offset, content_end, offset + len(line)))
@@ -141,19 +143,39 @@ def perturb(step, strategy):
     raise ValueError(f"Unknown strategy: {strategy}")
 
 
+POSITIONS = (("early", .25), ("middle", .5), ("late", .75))
+MIN_STEPS = 3
+
+
+def position_indices(n_steps):
+    """Zero-based cut index per position; a position whose line is already taken is dropped.
+
+    The cap n_steps - 2 keeps at least one step after the cut. On 3- and
+    4-step traces middle and late would name the same line, so late is
+    skipped rather than generated and counted twice.
+    """
+    result, used = [], set()
+    for name, fraction in POSITIONS:
+        index = min(n_steps - 2, int(n_steps * fraction))
+        if index not in used:
+            used.add(index)
+            result.append((name, index))
+    return result
+
+
 def interventions(response, strategy, tags=REASONING):
     spans = step_spans(response, tags)
-    if len(spans) < 3:
+    if len(spans) < MIN_STEPS:
         return []
     result = []
-    for name, fraction in (("early", .25), ("middle", .5), ("late", .75)):
-        index = min(len(spans) - 2, int(len(spans) * fraction))
+    for name, index in position_indices(len(spans)):
         start, end, cut = spans[index]
         original = response[start:end]
         changed = perturb(original, strategy)
         if changed is None:
             continue
-        result.append(dict(position=name, step_index=index,
+        result.append(dict(position=name, step_index=index, n_steps_total=len(spans),
+                           n_steps_after_cut=len(spans) - index - 1,
                            original_step=original, perturbed_step=changed,
                            prefix=response[:start] + changed + response[end:cut],
                            control_prefix=response[:cut]))
