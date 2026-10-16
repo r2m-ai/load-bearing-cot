@@ -4,7 +4,7 @@ The benchmark is organized around a question: when does changing a written reaso
 
 Useful contributions include new model adapters, dataset/answer adapters, parser regression cases, and complete reproducible runs. Start with the [protocol](docs/protocol.md). Keep new benchmark code in `load_bearing/` (a dataset is one row in `load_bearing/datasets.py:DATASETS`; a strategy is one entry in `load_bearing/protocol.py`); place paper experiments under the relevant research theme in `experiments/` and summaries under the corresponding theme in `results/`. Update the experiment map and any dependent paths when moving code.
 
-For a model result, include the model and dataset revisions, protocol version, full arguments, hardware/software environment, eligibility and parsing counts, and the generated manifest and summary. Inspect example interventions before interpreting a score. Distinguish paper results, reproduced results, and newly measured results. Do not add leaderboard numbers from a smoke test or a run with unresolved parsing failures.
+For a model result, include the model and dataset revisions, protocol version, full arguments, hardware/software environment (the manifest's `environment` block covers GPU, CUDA, driver and dtype), eligibility and parsing counts, and the generated manifest and summary. Inspect example interventions before interpreting a score. Distinguish paper results, reproduced results, and newly measured results. Do not add leaderboard numbers from a smoke test or a run with unresolved parsing failures.
 
 For code changes, run the offline suite:
 

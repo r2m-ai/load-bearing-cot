@@ -60,7 +60,7 @@ The backend uses [vLLM token prompts](https://docs.vllm.ai/en/latest/api/vllm/in
 
 ## Reproducibility and artifacts
 
-Supply `--model-revision` and `--dataset-revision` with commit hashes when publishing a run. Default upstream revisions can change. The manifest records these arguments, the reasoning-tag pair, package versions, dataset fingerprints, the sampled IDs and content hash, the chat template, and the repository commit/dirty state. A manifest without pinned revisions is useful provenance, not an exact environment lock.
+Supply `--model-revision` and `--dataset-revision` with commit hashes when publishing a run. Default upstream revisions can change. The manifest records these arguments, the reasoning-tag pair, package versions, dataset fingerprints, the sampled IDs and content hash, the chat template, the runtime environment (GPU names and compute capabilities, device count, CUDA and driver versions, torch version, model dtype and context length; a value the process cannot read is `null`), and the repository commit/dirty state. A manifest without pinned revisions is useful provenance, not an exact environment lock.
 
 `baselines.jsonl` records every sampled question, including incorrect and unparseable baselines. `interventions.jsonl` records every attempted valid edit and both continuation outcomes. Each row carries the base question ID for grouped analysis. Baseline records are appended before continuation generation, and intervention records after paired generations complete; interrupted partial questions are not resumable automatically. Keyboard interruption is recorded as `interrupted` in the manifest; both JSONL files exist even when no interventions qualify. Choose a new output directory for a retry.
 

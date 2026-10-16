@@ -126,7 +126,21 @@ class CLITests(unittest.TestCase):
             output = self.invoke(directory, backend)
             self.assertEqual((output / 'interventions.jsonl').read_text(), '')
             self.assertEqual(json.loads((output / 'summary.json').read_text())['status'], 'insufficient_data')
-            self.assertIn('finished_at', json.loads((output / 'manifest.json').read_text()))
+            manifest = json.loads((output / 'manifest.json').read_text())
+            self.assertIn('finished_at', manifest)
+            self.assertIsNone(manifest['environment'])
+
+    def test_environment_lands_in_the_manifest(self):
+        environment = {'gpu': [{'name': 'H100', 'compute_capability': '9.0'}], 'device_count': 1,
+                       'cuda': '12.4', 'driver': None, 'torch': '2.t', 'dtype': 'torch.bfloat16', 'max_model_len': 8192}
+        backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'),
+                                  generate=lambda requests: ['Answer: 99'], environment=lambda: environment)
+        with tempfile.TemporaryDirectory() as directory:
+            output = self.invoke(directory, backend)
+            manifest = json.loads((output / 'manifest.json').read_text())
+            self.assertEqual(manifest['environment'], environment)
+            self.assertIn('tensor_parallel_size', manifest['arguments'])
+            self.assertIn('gpu_memory_utilization', manifest['arguments'])
 
     def test_strategy_alias_is_recorded_under_its_canonical_name(self):
         backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'),

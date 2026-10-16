@@ -75,5 +75,31 @@ class BackendTests(unittest.TestCase):
             with self.subTest(bad=bad), self.assertRaises(ValueError):
                 reasoning_tags_for("unknown/model", bad)
 
+    def test_environment_reads_what_torch_exposes_and_tolerates_gaps(self):
+        torch = ModuleType("torch")
+        torch.__version__ = "2.t"
+        torch.version = SimpleNamespace(cuda="12.4")
+        torch.cuda = SimpleNamespace(device_count=lambda: 2,
+                                     get_device_name=lambda i: f"GPU{i}",
+                                     get_device_capability=lambda i: (9, 0) if i == 0 else 1 / 0)
+        backend = self.backend()
+        backend.model = SimpleNamespace(llm_engine=SimpleNamespace(model_config=SimpleNamespace(dtype="torch.bfloat16")))
+        with patch.dict(sys.modules, {"torch": torch}), \
+             patch("subprocess.check_output", side_effect=FileNotFoundError):
+            environment = backend.environment()
+        self.assertEqual(environment["gpu"], [{"name": "GPU0", "compute_capability": "9.0"},
+                                              {"name": "GPU1", "compute_capability": None}])
+        self.assertEqual(environment["device_count"], 2)
+        self.assertEqual(environment["cuda"], "12.4")
+        self.assertIsNone(environment["driver"])
+        self.assertEqual(environment["dtype"], "torch.bfloat16")
+        self.assertEqual(environment["max_model_len"], 1000)
+        torch.cuda = SimpleNamespace()
+        with patch.dict(sys.modules, {"torch": torch}), \
+             patch("subprocess.check_output", return_value="550.90\n"):
+            environment = backend.environment()
+        self.assertEqual(environment["gpu"], [])
+        self.assertEqual(environment["driver"], "550.90")
+
     def test_empty_batch(self):
         self.assertEqual(self.backend().generate([]), [])

@@ -158,6 +158,8 @@ def main():
         save_manifest()
         backend = VLLMBackend(args)
         manifest["chat_template"] = backend.tokenizer.chat_template
+        # --tensor-parallel-size and --gpu-memory-utilization already sit in arguments.
+        manifest["environment"] = backend.environment() if hasattr(backend, "environment") else None
         save_manifest()
         summary = run(examples, args.dataset, backend, args.strategy, record, tags, args.seed)
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")

@@ -37,6 +37,34 @@ class VLLMBackend:
                                      seed=args.seed, skip_special_tokens=False)
         self.max_length = self.model.llm_engine.model_config.max_model_len
 
+    def environment(self):
+        """GPU, CUDA and dtype as the loaded process sees them; unknown values are None.
+
+        Read here rather than in evaluate.py so the CLI stays free of GPU
+        imports and tests keep running on the standard library.
+        """
+        import subprocess
+        import torch
+
+        def read(function):
+            try:
+                return function()
+            except Exception:
+                return None
+
+        gpus = []
+        for index in range(read(lambda: torch.cuda.device_count()) or 0):
+            gpus.append({"name": read(lambda: torch.cuda.get_device_name(index)),
+                         "compute_capability": read(lambda: ".".join(map(str, torch.cuda.get_device_capability(index))))})
+        driver = read(lambda: subprocess.check_output(
+            ["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"],
+            text=True, stderr=subprocess.DEVNULL, timeout=10).split("\n")[0].strip() or None)
+        return {"gpu": gpus, "device_count": len(gpus),
+                "cuda": read(lambda: torch.version.cuda), "driver": driver,
+                "torch": read(lambda: torch.__version__),
+                "dtype": read(lambda: str(self.model.llm_engine.model_config.dtype)),
+                "max_model_len": read(lambda: self.max_length)}
+
     def generate(self, requests):
         """requests: (user prompt, assistant prefix); no follow-up user turn."""
         from vllm.inputs import TokensPrompt
