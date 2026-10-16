@@ -102,6 +102,19 @@ class CLITests(unittest.TestCase):
             self.assertEqual(json.loads((output / 'summary.json').read_text())['status'], 'insufficient_data')
             self.assertIn('finished_at', json.loads((output / 'manifest.json').read_text()))
 
+    def test_existing_output_dir_is_a_usage_error(self):
+        backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'), generate=lambda requests: ['Answer: 99'])
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'run'
+            output.mkdir()
+            (output / 'keep.txt').write_text('x')
+            stderr = io.StringIO()
+            with self.assertRaises(SystemExit) as caught, contextlib.redirect_stderr(stderr):
+                self.invoke(directory, backend)
+            self.assertEqual(caught.exception.code, 2)
+            self.assertIn('--output-dir already exists', stderr.getvalue())
+            self.assertEqual(sorted(p.name for p in output.iterdir()), ['keep.txt'])
+
     def test_interrupt_is_recorded(self):
         def interrupt(requests):
             raise KeyboardInterrupt

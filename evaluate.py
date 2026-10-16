@@ -87,6 +87,9 @@ def main():
         parser.error("--gpu-memory-utilization must be in (0, 1]")
     args.strategy = args.strategy or ("arithmetic" if args.dataset == "gsm8k" else "contradiction")
     output = args.output_dir or Path("runs") / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    if output.exists():
+        parser.error(f"--output-dir already exists: {output}; choose a new directory")
+    # exist_ok stays False so a directory created between the check and the call still fails.
     output.mkdir(parents=True, exist_ok=False)
     manifest = {"protocol": PROTOCOL_VERSION, "arguments": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
                 "model_id": MODEL_ALIASES.get(args.model, args.model), "python": platform.python_version(),
