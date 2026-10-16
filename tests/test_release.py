@@ -182,6 +182,83 @@ class CLITests(unittest.TestCase):
             self.assertIn('--output-dir already exists', stderr.getvalue())
             self.assertEqual(sorted(p.name for p in output.iterdir()), ['keep.txt'])
 
+    def resumable_run(self, directory):
+        """Interrupt a two-question run after the second baseline is on disk."""
+        source = Path(directory) / 'input.jsonl'
+        source.write_text(''.join(json.dumps(dict(id=f'q{i}', question=f'Q{i}', reference_answer='24')) + '\n' for i in (1, 2)))
+        output = Path(directory) / 'run'
+        trace = '1. There are 4 rows.\n2. Each row has 6 items.\n3. 4 times 6 is 24.\n4. The total is 24.\n5. So 24 items.\nAnswer: 24'
+        base = ['evaluate.py', '--model', 'fake', '--dataset', 'gsm8k', '--input-file', str(source), '--seed', '3']
+
+        class Backend:
+            def __init__(self, interrupt_second):
+                self.baseline_prompts, self.continuation_prefixes, self.interrupt_second = [], [], interrupt_second
+                self.tokenizer = SimpleNamespace(chat_template='test')
+            def generate(self, requests):
+                if requests[0][1] == '':
+                    self.baseline_prompts.append(requests[0][0])
+                    return [trace]
+                if self.interrupt_second and len(self.baseline_prompts) == 2:
+                    raise KeyboardInterrupt
+                self.continuation_prefixes.extend(prefix for _, prefix in requests)
+                return ['Answer: 99' if i % 2 == 0 else 'Answer: 24' for i in range(len(requests))]
+
+        def invoke(argv, backend):
+            with patch('sys.argv', argv), patch.object(evaluate, 'VLLMBackend', return_value=backend), \
+                 patch.object(evaluate.importlib.metadata, 'version', return_value='test'), \
+                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                evaluate.main()
+        first = Backend(interrupt_second=True)
+        with self.assertRaises(KeyboardInterrupt):
+            invoke(base + ['--output-dir', str(output)], first)
+        self.assertEqual(json.loads((output / 'manifest.json').read_text())['status'], 'interrupted')
+        self.assertEqual(len((output / 'baselines.jsonl').read_text().splitlines()), 2)
+        self.assertEqual(len((output / 'interventions.jsonl').read_text().splitlines()), 3)
+        return base, output, Backend, invoke
+
+    def test_resume_regenerates_only_the_missing_continuations(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base, output, Backend, invoke = self.resumable_run(directory)
+            second = Backend(interrupt_second=False)
+            invoke(base + ['--resume', str(output)], second)
+            self.assertEqual(second.baseline_prompts, [])
+            self.assertEqual(len(second.continuation_prefixes), 6)
+            rows = [json.loads(line) for line in (output / 'interventions.jsonl').read_text().splitlines()]
+            self.assertEqual(len(rows), 6)
+            self.assertEqual(sorted({row['id'] for row in rows}), ['q1', 'q2'])
+            self.assertEqual(len((output / 'baselines.jsonl').read_text().splitlines()), 2)
+            summary = json.loads((output / 'summary.json').read_text())
+            self.assertEqual(summary['n_questions'], 2)
+            self.assertEqual(summary['n_interventions'], 6)
+            self.assertEqual(summary['n_eligible_questions'], 2)
+            manifest = json.loads((output / 'manifest.json').read_text())
+            self.assertEqual(manifest['status'], 'ok')
+            self.assertEqual(len(manifest['resumed_from']), 1)
+            self.assertNotEqual(manifest['resumed_from'][0], manifest['started_at'])
+            self.assertNotIn('error', manifest)
+            # A finished run resumes to the same artifacts without any generation.
+            third = Backend(interrupt_second=False)
+            invoke(base + ['--resume', str(output)], third)
+            self.assertEqual((third.baseline_prompts, third.continuation_prefixes), ([], []))
+            self.assertEqual(len((output / 'interventions.jsonl').read_text().splitlines()), 6)
+            self.assertEqual(len(json.loads((output / 'manifest.json').read_text())['resumed_from']), 2)
+
+    def test_resume_refuses_mismatched_settings_and_partial_rows(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base, output, Backend, invoke = self.resumable_run(directory)
+            for extra in (['--strategy', 'contradiction'], ['--seed', '4'], ['--max-new-tokens', '5'],
+                          ['--reasoning-tags', '<r>,</r>'], ['--output-dir', str(Path(directory) / 'other')]):
+                with self.subTest(extra=extra), self.assertRaises(SystemExit):
+                    invoke(base + ['--resume', str(output)] + extra, Backend(interrupt_second=False))
+            self.assertEqual(len((output / 'interventions.jsonl').read_text().splitlines()), 3)
+            with (output / 'interventions.jsonl').open('a') as handle:
+                row = json.loads((output / 'interventions.jsonl').read_text().splitlines()[0])
+                handle.write(json.dumps(dict(row, id='q2')) + '\n')
+            with self.assertRaises(SystemExit):
+                invoke(base + ['--resume', str(output)], Backend(interrupt_second=False))
+            with self.assertRaises(SystemExit):
+                invoke(base + ['--resume', str(Path(directory) / 'missing')], Backend(interrupt_second=False))
+
     def test_interrupt_is_recorded(self):
         def interrupt(requests):
             raise KeyboardInterrupt

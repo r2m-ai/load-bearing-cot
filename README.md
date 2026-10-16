@@ -120,7 +120,7 @@ The evaluator keeps correctly answered baselines with at least three visible rea
 | `interventions.jsonl` | Original and edited steps, both prefixes, continuations, extracted answers and scores |
 | `manifest.json` | Protocol version, arguments, model ID, reasoning-tag pair, dataset fingerprints, sampled IDs/hash, package versions, chat template, GPU/CUDA/dtype environment, run status |
 
-Unparseable answers stay unscored and undefined rates are `null`. Output directories are never overwritten. When comparing models, report coverage and eligibility alongside the rate and keep the intervention and parsing settings fixed. The [protocol spec](docs/protocol.md) defines the estimand and how it differs from the paper experiments.
+Unparseable answers stay unscored and undefined rates are `null`. Output directories are never overwritten; `--resume RUN_DIR` continues an interrupted run under the same settings. When comparing models, report coverage and eligibility alongside the rate and keep the intervention and parsing settings fixed. The [protocol spec](docs/protocol.md) defines the estimand and how it differs from the paper experiments.
 
 ---
 
