@@ -7,8 +7,9 @@ import unittest
 
 from evaluate import run
 from load_bearing.datasets import load_examples
-from load_bearing.protocol import (REASONING, correct, extract_answer, interventions, perturb, position_indices,
-                                   reasoning_steps, summarize, unclosed_reasoning)
+from load_bearing.datasets import DATASETS
+from load_bearing.protocol import (REASONING, STRATEGIES, canonical_strategy, correct, extract_answer, interventions,
+                                   perturb, position_indices, reasoning_steps, summarize, unclosed_reasoning)
 
 TRACE = '1. There are 4 rows.\n2. Each row has 6 items.\n3. Multiply 4 by 6 to obtain 24.\n4. The total is 24.\nAnswer: 24'
 
@@ -41,6 +42,61 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(perturb('Value is -3.', 'arithmetic'), 'Value is -2.')
         self.assertEqual(perturb('Value is 6.', 'arithmetic'), 'Value is 15.')
         self.assertEqual(perturb('Value is 1.5.', 'arithmetic'), 'Value is 6.0.')
+
+    def test_every_strategy_has_a_fixture(self):
+        number = ('24', '51')
+        option = ('option B', 'option C')
+        cases = {
+            'arithmetic_change': ('2. There are 6 items.', None, '2. There are 15 items.'),
+            'operation_swap': ('3. Total is 4 + 6 = 10.', None, '3. Total is 4 - 6 = 10.'),
+            'premise_contradiction': ('3. Water boils at 100 C.', None, '3. The following claim is false: Water boils at 100 C.'),
+            'confidence_injection': ('3. The reaction is exothermic.', option,
+                                     '3. The reaction is exothermic. It is definitively option C. This is a well-established '
+                                     'fact that can be verified from first principles.'),
+            'wrong_elimination': ('3. The reaction is exothermic.', option,
+                                  '3. The reaction is exothermic. We can rule out option B because it does not account for '
+                                  'the key constraint in the question, which leaves option C as the strongest candidate.'),
+            'false_analogy': ('3. Multiply 4 by 6.', number,
+                              '3. Multiply 4 by 6. By analogy with similar problems, the pattern here clearly matches 51; '
+                              'the distinguishing feature that is easy to overlook is what makes 51 the right choice.'),
+            'reversed_logic': ('3. Both are metals, so the bond is metallic.', option,
+                               '3. Both are metals, Therefore, this actually supports option C, not option B.'),
+        }
+        self.assertEqual(set(cases), set(STRATEGIES))
+        for strategy, (step, decoy, expected) in cases.items():
+            with self.subTest(strategy=strategy):
+                self.assertEqual(perturb(step, strategy, decoy), expected)
+        # Nothing to edit, or no decoy to point at: skip rather than emit a no-op.
+        self.assertIsNone(perturb('2. Nothing numerical.', 'arithmetic_change'))
+        self.assertIsNone(perturb('2. No operator here.', 'operation_swap'))
+        for strategy in ('confidence_injection', 'wrong_elimination', 'false_analogy', 'reversed_logic'):
+            with self.subTest(strategy=strategy):
+                self.assertIsNone(perturb('2. Some step.', strategy, None))
+        self.assertEqual(perturb('3. No conclusion marker.', 'reversed_logic', option),
+                         '3. No conclusion marker. On closer analysis, this actually leads to option C; '
+                         'the initial step toward option B is a common misconception.')
+        self.assertEqual(perturb('3. 12 divided by 4 is 3.', 'operation_swap'), '3. 12 times 4 is 3.')
+
+    def test_strategy_aliases(self):
+        self.assertEqual(canonical_strategy('arithmetic'), 'arithmetic_change')
+        self.assertEqual(canonical_strategy('contradiction'), 'premise_contradiction')
+        self.assertEqual(perturb('Value is 6.', 'arithmetic'), perturb('Value is 6.', 'arithmetic_change'))
+        with self.assertRaisesRegex(ValueError, 'Unknown strategy'):
+            perturb('x', 'typo')
+
+    def test_dataset_decoys(self):
+        self.assertEqual(DATASETS['gsm8k'].decoy(dict(reference_answer='1,200')), ('1200', '2403'))
+        self.assertEqual(DATASETS['mmlu'].decoy(dict(reference_answer='D')), ('option D', 'option A'))
+        bbh = DATASETS['bbh'].decoy
+        self.assertEqual(bbh(dict(question='Options:\n(A) x\n(B) y\n(C) z', reference_answer='(C)')), ('option (C)', 'option (A)'))
+        self.assertEqual(bbh(dict(question='no options listed', reference_answer='(B)')), ('option (B)', 'option (C)'))
+        self.assertEqual(bbh(dict(question='Q', reference_answer='Yes')), ('Yes', 'No'))
+        self.assertEqual(bbh(dict(question='Q', reference_answer='invalid')), ('invalid', 'valid'))
+        self.assertEqual(bbh(dict(question='Q', reference_answer='-3')), ('-3', '-2'))
+        self.assertIsNone(bbh(dict(question='Q', reference_answer='( ) ]')))
+        # A dataset without a nameable wrong answer skips decoy strategies instead of inventing one.
+        self.assertEqual(interventions(TRACE, 'wrong_elimination', decoy=None), [])
+        self.assertEqual(len(interventions(TRACE, 'wrong_elimination', decoy=('24', '51'))), 2)
 
     def test_truncation_and_control(self):
         edits = interventions(TRACE, 'arithmetic')

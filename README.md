@@ -93,7 +93,9 @@ The default run samples **100 questions** with a fixed seed, uses greedy decodin
 python evaluate.py --model gemma-2-9b-it --dataset mmlu
 
 python evaluate.py --model llama-3.1-8b-instruct --dataset bbh \
-  --task multistep_arithmetic_two --strategy arithmetic
+  --task multistep_arithmetic_two --strategy arithmetic_change
+
+python evaluate.py --model gemma-2-9b-it --dataset mmlu --strategy wrong_elimination
 
 # any vLLM-compatible model, by Hugging Face ID or local path
 python evaluate.py --model Qwen/Qwen2.5-7B-Instruct --dataset gsm8k

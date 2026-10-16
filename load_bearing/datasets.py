@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 import json
 import random
+import re
 from typing import Callable, Optional
 
 from .protocol import correct_number, correct_text, extract_choice, extract_number, extract_text
@@ -24,6 +25,7 @@ class Dataset:
     answer_type: str                 # wording of the "Answer: <...>" instruction
     extract: Callable                # answer line -> normalized answer or None
     correct: Callable                # (normalized answer, reference) -> bool
+    decoy: Callable                  # input row -> (reference text, wrong text) for answer-directed edits, or None
     default_strategy: str
 
 
@@ -62,6 +64,45 @@ def _validate_text(row):
     return None
 
 
+def _wrong_number(reference):
+    wrong = reference * 2 + 3
+    return wrong if wrong != reference else reference + 1
+
+
+def _decoy_number(row):
+    reference = Decimal(str(row["reference_answer"]).replace(",", ""))
+    return str(reference), str(_wrong_number(reference))
+
+
+def _decoy_choice(row):
+    letter = row["reference_answer"].upper()
+    return f"option {letter}", f"option {'ABCD'[('ABCD'.index(letter) + 1) % 4]}"
+
+
+FLIPS = {"yes": "no", "no": "yes", "true": "false", "false": "true", "valid": "invalid", "invalid": "valid"}
+
+
+def _decoy_text(row):
+    """Deterministic wrong answer for a textual reference, or None when none can be named."""
+    reference = row["reference_answer"].strip()
+    letter = re.fullmatch(r"(\(?)([A-Z])\)?", reference)
+    if letter:
+        listed = sorted(set(re.findall(r"\(([A-Z])\)", row["question"])))
+        if letter[2] in listed and len(listed) > 1:
+            wrong = listed[(listed.index(letter[2]) + 1) % len(listed)]
+        else:
+            wrong = chr((ord(letter[2]) - 65 + 1) % 26 + 65)
+        wrap = (lambda x: f"({x})") if letter[1] else (lambda x: x)
+        return f"option {wrap(letter[2])}", f"option {wrap(wrong)}"
+    if reference.casefold() in FLIPS:
+        flipped = FLIPS[reference.casefold()]
+        return reference, flipped.capitalize() if reference[:1].isupper() else flipped
+    try:
+        return _decoy_number(row)
+    except InvalidOperation:
+        return None
+
+
 def _question_with_choices(row):
     return row["question"] + "\n" + "\n".join(f"{letter}) {choice}" for letter, choice in zip("ABCD", row["choices"]))
 
@@ -74,15 +115,15 @@ DATASETS = {
     "gsm8k": Dataset(source="openai/gsm8k", configs=("main",), split="test",
                      convert=_convert_gsm8k, validate=_validate_number, question=_question,
                      answer_type="number", extract=extract_number, correct=correct_number,
-                     default_strategy="arithmetic"),
+                     decoy=_decoy_number, default_strategy="arithmetic_change"),
     "mmlu": Dataset(source="cais/mmlu", configs=("all",), split="test",
                     convert=_convert_mmlu, validate=_validate_choice, question=_question_with_choices,
                     answer_type="letter", extract=extract_choice, correct=correct_text,
-                    default_strategy="contradiction"),
+                    decoy=_decoy_choice, default_strategy="premise_contradiction"),
     "bbh": Dataset(source="lukaemon/bbh", configs=None, split="test",
                    convert=_convert_bbh, validate=_validate_text, question=_question,
                    answer_type="your answer", extract=extract_text, correct=correct_text,
-                   default_strategy="contradiction"),
+                   decoy=_decoy_text, default_strategy="premise_contradiction"),
 }
 
 

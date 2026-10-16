@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import evaluate
 from load_bearing.datasets import DATASETS, adapter, load_examples
-from load_bearing.protocol import correct, extract_answer, interventions, perturb
+from load_bearing.protocol import STRATEGIES, correct, extract_answer, interventions, perturb
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -61,7 +61,8 @@ class RegistryTests(unittest.TestCase):
                     self.assertTrue(getattr(dataset, field), field)
                 for field in ('convert', 'validate', 'question', 'extract', 'correct'):
                     self.assertTrue(callable(getattr(dataset, field)), field)
-                self.assertIn(dataset.default_strategy, ('arithmetic', 'contradiction'))
+                self.assertIn(dataset.default_strategy, STRATEGIES)
+                self.assertTrue(callable(dataset.decoy))
                 self.assertTrue(dataset.configs is None or len(dataset.configs) > 0)
 
     def test_unknown_dataset_raises(self):
@@ -126,6 +127,18 @@ class CLITests(unittest.TestCase):
             self.assertEqual((output / 'interventions.jsonl').read_text(), '')
             self.assertEqual(json.loads((output / 'summary.json').read_text())['status'], 'insufficient_data')
             self.assertIn('finished_at', json.loads((output / 'manifest.json').read_text()))
+
+    def test_strategy_alias_is_recorded_under_its_canonical_name(self):
+        backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'),
+                                  generate=lambda requests: ['Answer: 24'] * len(requests) if requests[0][1] else
+                                  ['1. Four rows.\n2. Six items each.\n3. Four times six is 24.\n4. Done.\nAnswer: 24'])
+        with tempfile.TemporaryDirectory() as directory:
+            output = self.invoke(directory, backend, ['--strategy', 'contradiction'])
+            manifest = json.loads((output / 'manifest.json').read_text())
+            self.assertEqual(manifest['arguments']['strategy'], 'premise_contradiction')
+            rows = [json.loads(line) for line in (output / 'interventions.jsonl').read_text().splitlines()]
+            self.assertTrue(rows)
+            self.assertTrue(all(row['strategy'] == 'premise_contradiction' for row in rows))
 
     def test_reasoning_tags_are_recorded_and_validated(self):
         backend = SimpleNamespace(tokenizer=SimpleNamespace(chat_template='test'), generate=lambda requests: ['Answer: 99'])

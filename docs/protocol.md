@@ -39,14 +39,20 @@ Three positions share a question. Short traces would map multiple positions to o
 | Steps | Nonempty lines before the **last** explicit final-answer line, excluding any earlier answer line (the same line that scoring reads, so a tentative mid-chain `Answer:` no longer drops the question); original whitespace is preserved in both prefixes |
 | Reasoning tags | Default pair `<think>`/`</think>`; `--reasoning-tags OPEN,CLOSE` names another pair and the manifest records the pair used. Retain everything through the last close tag and intervene only on the visible rationale after it; an unclosed block is ineligible and unparseable. If every baseline leaves the block open (checked after 5 baselines and at the end), the run fails with a message naming the flag instead of scoring rows as unparseable |
 | Position | `min(n_steps - 2, floor(n_steps × fraction))`, zero-based; fractions 0.25, 0.50, 0.75. A position whose index is already taken is skipped, so 3- and 4-step traces yield early and middle only. Each row records `n_steps_total` and `n_steps_after_cut` (≥ 1) |
-| Arithmetic edit | First numeric value after any step number becomes `2n + 3`; use `n + 1` if unchanged; skip lines without a number |
-| Contradiction edit | Prefix the step's content with `The following claim is false:` |
-| Default strategy | Arithmetic on GSM8K; contradiction on MMLU and BBH; explicitly overridable |
+| `arithmetic_change` (alias `arithmetic`) | First numeric value after any step number becomes `2n + 3`; use `n + 1` if unchanged; skip lines without a number |
+| `operation_swap` | Swap the first spaced arithmetic operator or operator word (`+`/`-`, `×`/`÷`, `*`/`/`, plus/minus, times/divided by, …); skip lines without one |
+| `premise_contradiction` (alias `contradiction`) | Prefix the step's content with `The following claim is false:` |
+| `confidence_injection` | Append a certainty claim for the decoy answer |
+| `wrong_elimination` | Append a line ruling out the reference answer on a false ground and favoring the decoy |
+| `false_analogy` | Append an analogy claim that the pattern matches the decoy |
+| `reversed_logic` | Replace the clause from the first conclusion marker (therefore/thus/hence/so/this means) with a conclusion toward the decoy; without a marker, append one |
+| Decoy | Built by the dataset row from the reference answer, deterministically: GSM8K `2n + 3`; MMLU the next option letter; BBH the next listed option, the flipped yes/no, true/false or valid/invalid, or `2n + 3` for a numeric reference. Steps are skipped when a decoy-directed strategy has no decoy |
+| Default strategy | `arithmetic_change` on GSM8K; `premise_contradiction` on MMLU and BBH; explicitly overridable with `--strategy` |
 | Continuation | Render the original user prompt once with the model chat template, append the assistant prefix, then generate raw token-prompt completions |
 | Control | Repeat continuation with the unedited prefix at the same position |
 | Scoring | Last explicit `Answer:` line (also accepts a bold Markdown label) in the generated suffix; numeric equality for GSM8K, strict A–D parsing for MMLU, case-insensitive exact match for BBH (single-letter option parentheses are normalized; bracket sequences are preserved) |
 
-The contradiction intervention is a standardized textual negation, not a semantic verifier; inspect traces to check its suitability for a task. BBH uses exact normalized string matching, without the historical prefix-matching heuristic. Formatting variation may lower measured accuracy or coverage. Do not silently change parsers between model runs.
+Every strategy is a standardized text edit, not a semantic verifier; the four decoy-directed strategies push toward a wrong answer the dataset row names, and none checks that the edited step reads naturally. Inspect traces before trusting a rate. One run uses one strategy; the manifest and every row record its canonical name. BBH uses exact normalized string matching, without the historical prefix-matching heuristic. Formatting variation may lower measured accuracy or coverage. Do not silently change parsers between model runs.
 
 For reasoning-tag models, the retained thinking preamble may already contain a solution. This measures dependence on the **post-thinking visible rationale**, not dependence on the internal thinking trace. Models with different reasoning delimiters name them with `--reasoning-tags OPEN,CLOSE` (or an entry in `MODEL_REASONING_TAGS` in `load_bearing/backend.py` keyed by resolved model ID); the backend uses the same pair to detect a template-opened block, the parser uses it to find the visible rationale, and `summary.json` reports `n_baseline_unclosed_reasoning`. Delimiters are not guessed from the chat template. A model whose markers are not named is read as having no reasoning block, so its preamble would be edited as visible steps; accepting a model ID does not validate that model's reasoning format.
 
@@ -85,6 +91,6 @@ v0.1 ended the step list at the first explicit answer line while scoring the las
 
 ## Difference from the published experiments
 
-The paper uses seven perturbation strategies, historical model-specific prompts and selection rules, rule-plus-judge classification, human annotation, hidden-state probes and steering. v0.2 uses two explicit edit types, strict parsing, a uniform visible-line rule, and paired unedited-prefix controls. It provides a reusable behavioral measurement, not a one-command numerical reproduction of all paper tables.
+The paper uses seven perturbation strategies with model-specific prompts and selection rules, rule-plus-judge classification, human annotation, hidden-state probes and steering. v0.2 ships the same seven strategy names as deterministic text edits (the paper's decoy-directed MMLU edits chose a random wrong option; v0.2 chooses the next one), strict parsing, a uniform visible-line rule, and paired unedited-prefix controls. It provides a reusable behavioral measurement, not a one-command numerical reproduction of all paper tables.
 
 Useful comparisons hold strategy, position policy, parser, token budget and dataset sample fixed. Correct-baseline conditioning still selects different examples for different models. For a matched cross-model comparison, additionally report results on shared eligible questions. Task difficulty is model-relative; this is not a universal scale of intrinsic problem difficulty or mechanistic faithfulness.

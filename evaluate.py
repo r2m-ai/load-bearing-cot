@@ -12,8 +12,9 @@ import subprocess
 from load_bearing import PROTOCOL_VERSION
 from load_bearing.backend import MODEL_ALIASES, VLLMBackend, reasoning_tags_for
 from load_bearing.datasets import DATASETS, format_prompt, load_examples
-from load_bearing.protocol import (MIN_STEPS, POSITIONS, REASONING, correct, extract_answer, interventions,
-                                   parse_reasoning_tags, position_indices, step_spans, summarize, unclosed_reasoning)
+from load_bearing.protocol import (POSITIONS, REASONING, STRATEGY_CHOICES, canonical_strategy, correct, extract_answer,
+                                   interventions, parse_reasoning_tags, position_indices, step_spans, summarize,
+                                   unclosed_reasoning)
 
 # After this many baselines that all open a reasoning block without closing
 # it, the delimiters are wrong for this model; stop instead of scoring every
@@ -29,6 +30,8 @@ def check_reasoning_format(baselines, tags, final=False):
 
 
 def run(examples, dataset, backend, strategy, record, tags=REASONING):
+    strategy = canonical_strategy(strategy)
+    decoy = DATASETS[dataset].decoy
     baselines, rows = [], []
     for index, example in enumerate(examples):
         prompt = format_prompt(example, dataset)
@@ -40,7 +43,7 @@ def run(examples, dataset, backend, strategy, record, tags=REASONING):
         baseline = dict(example, prompt=prompt, response=response, answer=answer,
                         correct=correct(answer, example["reference_answer"], dataset),
                         reasoning_unclosed=unclosed_reasoning(response, tags))
-        edits = interventions(response, strategy, tags) if baseline["correct"] is True else []
+        edits = interventions(response, strategy, tags, decoy(example)) if baseline["correct"] is True else []
         n_steps = len(step_spans(response, tags))
         baseline.update(n_steps=n_steps, n_interventions=len(edits),
                         n_positions_collapsed=(len(POSITIONS) - len(position_indices(n_steps))
@@ -95,7 +98,9 @@ def main():
     parser.add_argument("--all", action="store_true", help="Use all dataset rows")
     parser.add_argument("--task", help="Single BBH task (default: all available BBH tasks)")
     parser.add_argument("--input-file", type=Path, help="Local JSONL dataset in the documented schema")
-    parser.add_argument("--strategy", choices=["arithmetic", "contradiction"], default=None)
+    parser.add_argument("--strategy", choices=STRATEGY_CHOICES, default=None,
+                        help="Perturbation (default: the dataset's row in load_bearing/datasets.py); "
+                             "arithmetic and contradiction are aliases of arithmetic_change and premise_contradiction")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-new-tokens", type=positive, default=4096)
     parser.add_argument("--reasoning-tags", metavar="OPEN,CLOSE",
@@ -110,7 +115,7 @@ def main():
         parser.error("--task applies only to BBH")
     if not 0 < args.gpu_memory_utilization <= 1:
         parser.error("--gpu-memory-utilization must be in (0, 1]")
-    args.strategy = args.strategy or DATASETS[args.dataset].default_strategy
+    args.strategy = canonical_strategy(args.strategy or DATASETS[args.dataset].default_strategy)
     if args.reasoning_tags is not None:
         try:
             parse_reasoning_tags(args.reasoning_tags)

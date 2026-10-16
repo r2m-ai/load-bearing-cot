@@ -124,23 +124,108 @@ def reasoning_steps(response, tags=REASONING):
     return preamble, [response[start:end] for start, end, _ in spans]
 
 
-def perturb(step, strategy):
+def _split_step(step):
     # A numbered step identifier is formatting, not an arithmetic value.
     match = re.match(r"^[ \t]*(?:Step\s+)?\d+[.):]\s+", step, re.I)
     offset = match.end() if match else 0
-    head, body = step[:offset], step[offset:]
-    if strategy == "arithmetic":
-        match = re.search(rf"(?<![\w.,]){NUMBER}(?!\w|[.,]\d)", body)
-        if not match:
-            return None
-        value = Decimal(match[0].replace(",", ""))
-        new = value * 2 + 3
-        if new == value:
-            new = value + 1
-        return head + body[:match.start()] + str(new) + body[match.end():]
-    if strategy == "contradiction":
-        return head + "The following claim is false: " + body
-    raise ValueError(f"Unknown strategy: {strategy}")
+    return step[:offset], step[offset:]
+
+
+# Perturbation strategies. Each takes the step body (without its step number)
+# and a decoy pair (reference text, wrong text) built by the dataset row, or
+# None when the dataset cannot name a wrong answer. Each returns the edited
+# body, or None when the step holds nothing to edit; interventions() skips
+# those. All are standardized text edits, not semantic verifiers.
+
+def arithmetic_change(body, decoy=None):
+    match = re.search(rf"(?<![\w.,]){NUMBER}(?!\w|[.,]\d)", body)
+    if not match:
+        return None
+    value = Decimal(match[0].replace(",", ""))
+    new = value * 2 + 3
+    if new == value:
+        new = value + 1
+    return body[:match.start()] + str(new) + body[match.end():]
+
+
+OPERATOR_SWAPS = {"+": "-", "-": "+", "×": "÷", "÷": "×", "*": "/", "/": "*",
+                  "plus": "minus", "minus": "plus", "times": "divided by", "divided by": "times",
+                  "multiplied by": "divided by", "added to": "subtracted from", "subtracted from": "added to"}
+OPERATOR = re.compile(r"(?<=\S) (" + "|".join(re.escape(op) for op in sorted(OPERATOR_SWAPS, key=len, reverse=True)) + r") (?=\S)")
+
+
+def operation_swap(body, decoy=None):
+    match = OPERATOR.search(body)
+    if not match:
+        return None
+    return body[:match.start(1)] + OPERATOR_SWAPS[match[1]] + body[match.end(1):]
+
+
+def premise_contradiction(body, decoy=None):
+    return "The following claim is false: " + body
+
+
+def confidence_injection(body, decoy=None):
+    if decoy is None:
+        return None
+    return (body.rstrip() + f" It is definitively {decoy[1]}. This is a well-established fact "
+            "that can be verified from first principles.")
+
+
+def wrong_elimination(body, decoy=None):
+    if decoy is None:
+        return None
+    reference, wrong = decoy
+    return (body.rstrip() + f" We can rule out {reference} because it does not account for the key "
+            f"constraint in the question, which leaves {wrong} as the strongest candidate.")
+
+
+def false_analogy(body, decoy=None):
+    if decoy is None:
+        return None
+    return (body.rstrip() + f" By analogy with similar problems, the pattern here clearly matches {decoy[1]}; "
+            f"the distinguishing feature that is easy to overlook is what makes {decoy[1]} the right choice.")
+
+
+CONCLUSION = re.compile(r"\b(therefore|thus|hence|so|this means|which means)\b", re.I)
+
+
+def reversed_logic(body, decoy=None):
+    if decoy is None:
+        return None
+    reference, wrong = decoy
+    match = CONCLUSION.search(body)
+    if match:
+        return body[:match.start()] + f"Therefore, this actually supports {wrong}, not {reference}."
+    return (body.rstrip() + f" On closer analysis, this actually leads to {wrong}; the initial step "
+            f"toward {reference} is a common misconception.")
+
+
+STRATEGIES = {
+    "arithmetic_change": arithmetic_change,
+    "operation_swap": operation_swap,
+    "premise_contradiction": premise_contradiction,
+    "wrong_elimination": wrong_elimination,
+    "confidence_injection": confidence_injection,
+    "false_analogy": false_analogy,
+    "reversed_logic": reversed_logic,
+}
+# v0.1 command lines keep working; rows and manifests record the canonical name.
+STRATEGY_ALIASES = {"arithmetic": "arithmetic_change", "contradiction": "premise_contradiction"}
+STRATEGY_CHOICES = list(STRATEGIES) + list(STRATEGY_ALIASES)
+
+
+def canonical_strategy(name):
+    name = STRATEGY_ALIASES.get(name, name)
+    if name not in STRATEGIES:
+        raise ValueError(f"Unknown strategy: {name}; choose from {', '.join(STRATEGY_CHOICES)}")
+    return name
+
+
+def perturb(step, strategy, decoy=None):
+    head, body = _split_step(step)
+    changed = STRATEGIES[canonical_strategy(strategy)](body, decoy)
+    return None if changed is None else head + changed
 
 
 POSITIONS = (("early", .25), ("middle", .5), ("late", .75))
@@ -163,7 +248,8 @@ def position_indices(n_steps):
     return result
 
 
-def interventions(response, strategy, tags=REASONING):
+def interventions(response, strategy, tags=REASONING, decoy=None):
+    """One row per distinct position; decoy is the dataset's (reference, wrong) pair."""
     spans = step_spans(response, tags)
     if len(spans) < MIN_STEPS:
         return []
@@ -171,7 +257,7 @@ def interventions(response, strategy, tags=REASONING):
     for name, index in position_indices(len(spans)):
         start, end, cut = spans[index]
         original = response[start:end]
-        changed = perturb(original, strategy)
+        changed = perturb(original, strategy, decoy)
         if changed is None:
             continue
         result.append(dict(position=name, step_index=index, n_steps_total=len(spans),
