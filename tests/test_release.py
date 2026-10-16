@@ -79,6 +79,76 @@ class RegistryTests(unittest.TestCase):
         self.assertNotIn('"arithmetic" if args.dataset == "gsm8k"', parser_source)
 
 
+def csv_cell(path, where, column):
+    import csv
+    rows = [row for row in csv.DictReader((ROOT / path).read_text().splitlines())
+            if all(row[key] == value for key, value in where.items())]
+    assert len(rows) == 1, (path, where, len(rows))
+    return float(rows[0][column])
+
+
+def json_pointer(path, pointer):
+    value = json.loads((ROOT / path).read_text())
+    for key in pointer.split('/'):
+        value = value[key]
+    return value
+
+
+VARIANCE = 'results/controls/variance_decomposition/results.json'
+N500 = 'data/annotations/study_n500/analysis/results_n500.json'
+SWEEP = 'figures/probe_layer_sweep.csv'
+
+
+class NumberAuditTests(unittest.TestCase):
+    """Every number quoted in README.md that resolves to a shipped artifact, with its source.
+
+    Numbers that no shipped file carries (per-model accuracies, the MMLU
+    subject spread, steering counts, the 96.2% binary agreement) are not
+    listed; they come from records released only in the Hugging Face dataset.
+    """
+    # (quoted text, value as a fraction of the quoted unit, resolver)
+    CLAIMS = [
+        ('3.9%', 0.039, lambda: json_pointer(VARIANCE, 'cell_summary/gsm8k|numerical/c_rate')),
+        ('22.3%', 0.223, lambda: json_pointer(VARIANCE, 'cell_summary/mmlu|text/c_rate')),
+        ('40.9%', 0.409, lambda: json_pointer(VARIANCE, 'cell_summary/bbh_other|text/c_rate')),
+        ('64.5%', 0.645, lambda: json_pointer(VARIANCE, 'cell_summary/bbh_multistep_arith|numerical/c_rate')),
+        ('6.5%', 0.065, lambda: json_pointer(VARIANCE, 'cell_summary/gsm8k|text/c_rate')),
+        ('28,584', 28584, lambda: json_pointer(VARIANCE, 'n_total')),
+        ('21,238', 21238, lambda: json_pointer(VARIANCE, 'n_by_source/main_expanded_pairs')),
+        ('98.8%', 0.988, lambda: json_pointer(VARIANCE, 'deviance_partition/components/difficulty/fraction_of_total')),
+        ('0.8%', 0.008, lambda: json_pointer(VARIANCE, 'deviance_partition/components/type/fraction_of_total')),
+        ('75.3%', 0.753, lambda: csv_cell(SWEEP, {'layer': '23', 'task': '3-class (A/B/C)', 'probe': 'mlp'}, 'accuracy')),
+        ('86.2%', 0.862, lambda: csv_cell(SWEEP, {'layer': '28', 'task': 'Binary faithful', 'probe': 'mlp'}, 'accuracy')),
+        ('κ = 1.00', 1.0, lambda: json_pointer(N500, 'kappa/binary_c')),
+        ('κ ≈ 0.93', 0.93, lambda: json_pointer(N500, 'kappa/three_class')),
+        ('76.0%', 0.760, lambda: json_pointer(N500, 'consensus_vs_final/agree') / json_pointer(N500, 'consensus_vs_final/n')),
+    ]
+
+    def test_quoted_numbers_match_their_artifacts(self):
+        readme = (ROOT / 'README.md').read_text()
+        for quoted, value, resolve in self.CLAIMS:
+            with self.subTest(quoted=quoted):
+                self.assertIn(quoted, readme)
+                tolerance = 0.5 if isinstance(value, int) else 0.0005 if '%' in quoted else 0.005
+                self.assertAlmostEqual(resolve(), value, delta=tolerance)
+
+    def test_sixteen_fold_contrast(self):
+        low = json_pointer(VARIANCE, 'cell_summary/gsm8k|numerical/c_rate')
+        high = json_pointer(VARIANCE, 'cell_summary/bbh_multistep_arith|numerical/c_rate')
+        self.assertIn('16×', (ROOT / 'README.md').read_text())
+        self.assertGreaterEqual(high / low, 16)
+        self.assertLess(high / low, 17.5)
+
+    def test_probe_csvs_name_their_label_set_and_fit(self):
+        import csv
+        for path, fit in (('figures/probe_with_ci.csv', 'selected_layer_refit'), ('figures/probe_layer_sweep.csv', 'layer_sweep')):
+            rows = list(csv.DictReader((ROOT / path).read_text().splitlines()))
+            with self.subTest(path=path):
+                self.assertTrue(rows)
+                self.assertEqual({row['label_set'] for row in rows}, {'judge'})
+                self.assertEqual({row['fit'] for row in rows}, {fit})
+
+
 class LayoutTests(unittest.TestCase):
     def test_research_directories_are_present(self):
         for topic in ('pipeline', 'behavior', 'controls', 'validation', 'models', 'probes', 'steering', 'figures'):

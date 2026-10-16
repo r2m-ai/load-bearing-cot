@@ -23,10 +23,14 @@ The README figures are separate and live in [`docs/assets/`](../docs/assets/).
 | File | Contents | Produced by |
 |---|---|---|
 | `table4_behavioral.csv` | A/B/C counts by position, strategy and dataset | [`experiments/behavior/analyze_behaviors.py`](../experiments/behavior/analyze_behaviors.py) |
-| `table5_7_probe_with_ci.csv` | Probe accuracy with CIs at the selected layers | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
-| `table6_probe_judged.csv` | Full 42-layer probe sweep on judge labels | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
+| `probe_with_ci.csv` | Probe accuracy with CIs at the selected layers | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
+| `probe_layer_sweep.csv` | Full 42-layer probe sweep on judge labels | [`experiments/probes/retrain_probes.py`](../experiments/probes/retrain_probes.py) |
 | `table_auroc.csv` | AUROC at the best layer per probe task | [`experiments/probes/compute_auroc.py`](../experiments/probes/compute_auroc.py) |
 | `table_llama_probes.csv` | Llama probe transfer | [`experiments/models/llama.py`](../experiments/models/llama.py) |
 | `table7_intervention.csv` | Single-direction steering dose–response | [`experiments/steering/single_direction.py`](../experiments/steering/single_direction.py) |
+
+### Probe CSVs: label set and fit
+
+`probe_with_ci.csv`, `probe_layer_sweep.csv` and `probe_auroc.csv` are all fitted on the same LLM-judge labels (`label_3class` / `subtype` from `data/processed/subclassified_pairs.json`, grouped 5-fold CV over question IDs, n = 2,000); no rule-label or human-label fit is shipped. They are three separate fits, so cells differ by under 1pp where fold assignment and MLP initialization differ (3-class MLP at layer 23: 74.6% in the selected-layer refit, 75.3% in the sweep). The README and the paper quote the sweep (`probe_layer_sweep.csv`) and the AUROC file; the two CSVs now carry `label_set` and `fit` columns, added to the shipped snapshots, so each file says this on its face. `tests/test_release.py::NumberAuditTests` pins the quoted README numbers to these files.
 
 Most producing scripts need the `data/processed/` records, which Git ignores; regenerate them, or take the paper's own rows from the [Hugging Face dataset](https://huggingface.co/datasets/ReneeJia/cot-load-bearingness). See the [reproduction guide](../docs/paper-reproduction.md#reproduction-boundaries). Some scripts also emit additional development figures that are not part of the release.
