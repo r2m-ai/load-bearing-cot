@@ -9,7 +9,8 @@ from evaluate import run
 from load_bearing.datasets import load_examples
 from load_bearing.datasets import DATASETS
 from load_bearing.protocol import (REASONING, STRATEGIES, canonical_strategy, correct, extract_answer, interventions,
-                                   perturb, position_indices, reasoning_steps, summarize, unclosed_reasoning)
+                                   perturb, position_indices, reasoning_steps, summarize, uncertainty, unclosed_reasoning,
+                                   wilson_interval)
 
 TRACE = '1. There are 4 rows.\n2. Each row has 6 items.\n3. Multiply 4 by 6 to obtain 24.\n4. The total is 24.\nAnswer: 24'
 
@@ -205,6 +206,32 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(result['paired_error_rate_difference'], 1)
         self.assertIsNone(summarize([])['error_propagation_rate'])
 
+    def test_question_clustered_uncertainty(self):
+        self.assertIsNone(wilson_interval(0, 0))
+        low, high = wilson_interval(5, 10)
+        self.assertAlmostEqual(low, 0.2366, places=3)
+        self.assertAlmostEqual(high, 0.7634, places=3)
+        self.assertEqual(wilson_interval(0, 1)[0], 0)
+        rows = []
+        for q in range(8):
+            for position in range(3):
+                rows.append(dict(id=f'q{q}', perturbed_correct=q % 2 == 0, control_correct=True))
+        rows.append(dict(id='q8', perturbed_correct=None, control_correct=True))
+        first, second = uncertainty(rows, 7), uncertainty(rows, 7)
+        self.assertEqual(first, second)
+        self.assertEqual(first['n_questions_scored'], 8)
+        self.assertEqual(first['n_questions_paired'], 8)
+        low, high = first['paired_error_rate_difference_ci95']
+        self.assertLessEqual(low, 0.5)
+        self.assertGreaterEqual(high, 0.5)
+        # Three identical rows per question add no information: clustered
+        # resampling spans the question-level gap while a row-level bootstrap would not.
+        self.assertGreater(high - low, 0.2)
+        empty = uncertainty([], 1)
+        self.assertIsNone(empty['error_propagation_rate_ci95'])
+        self.assertIsNone(empty['paired_error_rate_difference_ci95'])
+        self.assertIsNone(uncertainty(rows[:3], 1)['paired_error_rate_difference_ci95'])
+
     def test_local_data_duplicate_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'data.jsonl'
@@ -234,6 +261,9 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(len(backend.requests), 5)
         self.assertEqual(len(records), 3)
         self.assertEqual(result['n_coincident_positions_skipped'], 1)
+        self.assertEqual(result['n_questions_scored'], 1)
+        self.assertEqual(result['error_propagation_rate_ci95'][1], 1)
+        self.assertIsNone(result['paired_error_rate_difference_ci95'])
         self.assertEqual(result['by_position']['late']['n_interventions'], 0)
         self.assertEqual(sorted(result['by_remaining_steps']), [1, 2])
         self.assertEqual(result['by_remaining_steps'][2]['n_interventions'], 1)

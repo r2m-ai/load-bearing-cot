@@ -14,7 +14,7 @@ from load_bearing.backend import MODEL_ALIASES, VLLMBackend, reasoning_tags_for
 from load_bearing.datasets import DATASETS, format_prompt, load_examples
 from load_bearing.protocol import (POSITIONS, REASONING, STRATEGY_CHOICES, canonical_strategy, correct, extract_answer,
                                    interventions, parse_reasoning_tags, position_indices, step_spans, summarize,
-                                   unclosed_reasoning)
+                                   uncertainty, unclosed_reasoning)
 
 # After this many baselines that all open a reasoning block without closing
 # it, the delimiters are wrong for this model; stop instead of scoring every
@@ -29,7 +29,7 @@ def check_reasoning_format(baselines, tags, final=False):
                          f"check --reasoning-tags for this model or raise --max-new-tokens")
 
 
-def run(examples, dataset, backend, strategy, record, tags=REASONING):
+def run(examples, dataset, backend, strategy, record, tags=REASONING, seed=42):
     strategy = canonical_strategy(strategy)
     decoy = DATASETS[dataset].decoy
     baselines, rows = [], []
@@ -68,6 +68,7 @@ def run(examples, dataset, backend, strategy, record, tags=REASONING):
         print(f"[{index + 1}/{len(examples)}] {example['id']}: correct={baseline['correct']}, interventions={len(edits)}", flush=True)
     check_reasoning_format(baselines, tags, final=True)
     report = summarize(rows)
+    report.update(uncertainty(rows, seed))
     report.update(n_questions=len(examples),
                   n_baseline_correct=sum(b["correct"] is True for b in baselines),
                   n_baseline_unparsed=sum(b["answer"] is None for b in baselines),
@@ -158,7 +159,7 @@ def main():
         backend = VLLMBackend(args)
         manifest["chat_template"] = backend.tokenizer.chat_template
         save_manifest()
-        summary = run(examples, args.dataset, backend, args.strategy, record, tags)
+        summary = run(examples, args.dataset, backend, args.strategy, record, tags, args.seed)
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         manifest["status"] = summary["status"]
         print(json.dumps(summary, indent=2))

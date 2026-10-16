@@ -115,7 +115,7 @@ The evaluator keeps correctly answered baselines with at least three visible rea
 
 | Output file | Contents |
 |---|---|
-| `summary.json` | Propagation rate, paired control error and rate difference, baseline accuracy, sample counts, answer coverage; broken down by task, position and steps remaining after the cut |
+| `summary.json` | Propagation rate with a Wilson interval, paired control error and rate difference with a question-clustered bootstrap interval, baseline accuracy, sample and question counts, answer coverage; broken down by task, position and steps remaining after the cut |
 | `baselines.jsonl` | Questions, references, prompts, baseline responses, eligibility |
 | `interventions.jsonl` | Original and edited steps, both prefixes, continuations, extracted answers and scores |
 | `manifest.json` | Protocol version, arguments, model ID, reasoning-tag pair, dataset fingerprints, sampled IDs/hash, package versions, chat template, run status |

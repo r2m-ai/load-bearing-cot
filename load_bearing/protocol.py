@@ -2,6 +2,8 @@
 
 Unknown answers are never silently counted as error propagation.
 """
+import math
+import random
 import re
 from decimal import Decimal, InvalidOperation
 
@@ -284,4 +286,52 @@ def summarize(rows):
         "control_error_rate": (
             sum(not r["control_correct"] for r in paired) / len(paired)
             if paired else None),
+    }
+
+
+def wilson_interval(successes, n, z=1.959964):
+    """95% Wilson score interval for a binomial rate; None when n is 0."""
+    if not n:
+        return None
+    p = successes / n
+    denominator = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / denominator
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / denominator
+    return [centre - half, centre + half]
+
+
+BOOTSTRAP_RESAMPLES = 2000
+
+
+def uncertainty(rows, seed, resamples=BOOTSTRAP_RESAMPLES):
+    """Question-clustered uncertainty for the headline rates.
+
+    Rows sharing an id are one cluster: three positions come from one
+    baseline, so a row-level resample would read as narrower than the data
+    justifies. The paired difference is bootstrapped over question IDs with a
+    seeded generator; the propagation rate gets a Wilson interval on rows.
+    """
+    scored = [r for r in rows if r["perturbed_correct"] is not None]
+    paired = [r for r in scored if r["control_correct"] is not None]
+    errors = sum(not r["perturbed_correct"] for r in scored)
+    clusters = {}
+    for row in paired:
+        difference = int(not row["perturbed_correct"]) - int(not row["control_correct"])
+        total, count = clusters.get(row["id"], (0, 0))
+        clusters[row["id"]] = (total + difference, count + 1)
+    interval = None
+    if len(clusters) >= 2:
+        generator = random.Random(seed)
+        values, estimates = list(clusters.values()), []
+        for _ in range(resamples):
+            sample = generator.choices(values, k=len(values))
+            estimates.append(sum(t for t, _ in sample) / sum(c for _, c in sample))
+        estimates.sort()
+        interval = [estimates[int(0.025 * (resamples - 1))], estimates[int(0.975 * (resamples - 1))]]
+    return {
+        "n_questions_scored": len({r["id"] for r in scored}),
+        "n_questions_paired": len(clusters),
+        "error_propagation_rate_ci95": wilson_interval(errors, len(scored)),
+        "paired_error_rate_difference_ci95": interval,
+        "bootstrap": {"unit": "question id", "resamples": resamples, "seed": seed},
     }
